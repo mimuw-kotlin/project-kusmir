@@ -7,7 +7,8 @@ import com.google.gson.stream.JsonToken
 import data.data_source.CardsDao
 import data.local.database.CardDb
 import data.network.ScryfallApi
-import data.repository.util.CardModelAdapter
+import data.repository.util.toDatabase
+import data.repository.util.toDomain
 import domain.model.Card
 import domain.repository.CardsRepository
 import io.ktor.util.cio.*
@@ -24,16 +25,14 @@ class CardsRepositoryImpl(
     private val cardsDao: CardsDao,
     private val scryfallApi: ScryfallApi
 ): CardsRepository {
-    private val cardModelAdapter = CardModelAdapter()
-
     override suspend fun getCardById(id: Uuid): Card? {
         val card = cardsDao.getById(id)
-        return card?.let{ cardModelAdapter.toDomain(card) }
+        return card?.toDomain()
     }
 
     override suspend fun getCardByName(name: String): Card? {
         val card = cardsDao.getByName(name)
-        return card?.let{ cardModelAdapter.toDomain(card) }
+        return card?.toDomain()
     }
 
     override suspend fun fetchAndUpdateCardsData() {
@@ -58,7 +57,7 @@ class CardsRepositoryImpl(
                 val allCards: MutableList<CardDb> = mutableListOf()
                 while (jsonReader.hasNext() && jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
                     val jsonObject = gson.fromJson<JsonElement>(jsonReader, JsonElement::class.java).asJsonObject
-                    allCards.add(cardModelAdapter.fromJsonToDatabase(jsonObject))
+                    allCards.add(jsonObject.toDatabase())
 
                     if (allCards.size >= 5000) {
                         cardsDao.insertMultiple(allCards)
