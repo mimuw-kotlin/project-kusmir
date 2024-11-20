@@ -1,0 +1,104 @@
+---IMPORTS
+import kotlin.collections.Map;
+import kotlin.collections.List;
+import kotlin.uuid.Uuid;
+
+---TABLE
+CREATE TABLE IF NOT EXISTS 'cardDb'(
+    'id' BLOB AS Uuid NOT NULL PRIMARY KEY,
+    'name' TEXT NOT NULL UNIQUE,
+    'colors' TEXT AS List<kotlin.String>,
+    'legalities' TEXT AS Map<kotlin.String, kotlin.Boolean> NOT NULL,
+    'imageSource' TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS 'deckDb' (
+    'id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    'name' TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS 'card_deck' (
+    'cardId' BLOB AS Uuid NOT NULL,
+    'deckId' INTEGER NOT NULL,
+    'type' TEXT NOT NULL CHECK (type IN ('main', 'sideboard')),
+    PRIMARY KEY (cardId, deckId),
+    FOREIGN KEY (cardId) REFERENCES cardDb(id) ON DELETE CASCADE,
+    FOREIGN KEY (deckId) REFERENCES deckDb(id) ON DELETE CASCADE
+);
+
+---CARD QUERIES
+getById:
+SELECT * FROM 'cardDb' WHERE id = :id LIMIT 1;
+
+getByName:
+SELECT * FROM 'cardDb' WHERE name = :name LIMIT 1;
+
+deleteWithIds:
+DELETE FROM 'cardDb' WHERE id IN ?;
+
+deleteWithId:
+DELETE FROM 'cardDb' WHERE id = :id;
+
+deleteAllCards:
+DELETE FROM 'cardDb';
+
+insertCard:
+INSERT OR REPLACE INTO 'cardDb' (
+    'id',
+    'name',
+    'colors',
+    'legalities',
+    'imageSource'
+) VALUES (
+    :id,
+    :name,
+    :colors,
+    :legalities,
+    :imageSource
+);
+
+---DECK QUERIES
+insertDeck:
+INSERT INTO 'deckDb' (name) VALUES (:name);
+
+insertCardIntoDeck:
+INSERT INTO card_deck (cardId, deckId, type)
+VALUES (:cardId, :deckId, :type);
+
+getAllDecks:
+SELECT * FROM deckDb;
+
+getAllCardsFromDeck:
+SELECT cardDb.*
+FROM cardDb JOIN card_deck ON cardDb.id = card_deck.cardId
+WHERE card_deck.deckId = :deckId;
+
+getCardsFromDeck:
+SELECT cardDb.*
+FROM cardDb JOIN card_deck ON cardDb.id = card_deck.cardId
+WHERE card_deck.deckId = :deckId AND card_deck.type = :type;
+
+deleteDeck:
+DELETE FROM deckDb WHERE id = :deckId;
+
+deleteCardFromDeck:
+DELETE FROM card_deck
+WHERE cardId = :cardId AND deckId = :deckId;
+
+updateDeckName:
+UPDATE deckDb
+SET name = :name
+WHERE id = :deckId;
+
+getDecksContainingCard:
+SELECT deckDb.*
+FROM deckDb JOIN card_deck ON deckDb.id = card_deck.deckId
+WHERE card_deck.cardId = :cardId;
+
+getDeckByName:
+SELECT * FROM deckDb WHERE name = :name;
+
+getDeckSize:
+SELECT COUNT(*)
+FROM card_deck
+WHERE deckId = :deckId AND type = :type;
