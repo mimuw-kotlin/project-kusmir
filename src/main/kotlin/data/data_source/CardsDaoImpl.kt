@@ -1,11 +1,8 @@
 package data.data_source
 
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToList
 import data.local.database.CardDb
 import data.local.database.Database
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlin.uuid.Uuid
 
@@ -13,13 +10,7 @@ class CardsDaoImpl(
     val db: Database
 ): CardsDao {
 
-    private val queries = db.cardQueries
-
-    override suspend fun getAll(): Flow<List<CardDb>> {
-        return withContext(Dispatchers.IO) {
-            queries.entries().asFlow().mapToList(Dispatchers.Default)
-        }
-    }
+    private val queries = db.databaseQueries
 
     override suspend fun getById(id: Uuid): CardDb? {
         return withContext(Dispatchers.IO) {
@@ -53,7 +44,7 @@ class CardsDaoImpl(
         imageSource: String
     ) {
         withContext(Dispatchers.IO) {
-            queries.insert(
+            queries.insertCard(
                 id,
                 name,
                 colors,
@@ -66,7 +57,7 @@ class CardsDaoImpl(
     override suspend fun insert(card: CardDb) {
         withContext(Dispatchers.IO) {
             with(card) {
-                queries.insert(
+                queries.insertCard(
                     id,
                     name,
                     colors,
@@ -81,7 +72,7 @@ class CardsDaoImpl(
         withContext(Dispatchers.IO) {
             db.transaction {
                 cards.forEach { card ->
-                    queries.insert(
+                    queries.insertCard(
                         card.id,
                         card.name,
                         card.colors,

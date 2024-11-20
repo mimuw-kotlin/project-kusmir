@@ -1,11 +1,9 @@
 package data.data_source
 
 import data.local.database.CardDb
-import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
 interface CardsDao {
-    suspend fun getAll(): Flow<List<CardDb>>
     suspend fun getById(id: Uuid): CardDb?
     suspend fun getByName(name: String): CardDb?
     suspend fun deleteWithId(id: Uuid)

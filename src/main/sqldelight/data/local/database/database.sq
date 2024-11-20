@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS 'deckDb' (
 CREATE TABLE IF NOT EXISTS 'card_deck' (
     'cardId' BLOB AS Uuid NOT NULL,
     'deckId' INTEGER NOT NULL,
-    'type' TEXT NOT NULL CHECK (type IN ('main', 'sideboard')),
+    'type' TEXT NOT NULL CHECK (type IN ('main', 'side')),
     PRIMARY KEY (cardId, deckId),
     FOREIGN KEY (cardId) REFERENCES cardDb(id) ON DELETE CASCADE,
     FOREIGN KEY (deckId) REFERENCES deckDb(id) ON DELETE CASCADE
@@ -68,11 +68,6 @@ VALUES (:cardId, :deckId, :type);
 getAllDecks:
 SELECT * FROM deckDb;
 
-getAllCardsFromDeck:
-SELECT cardDb.*
-FROM cardDb JOIN card_deck ON cardDb.id = card_deck.cardId
-WHERE card_deck.deckId = :deckId;
-
 getCardsFromDeck:
 SELECT cardDb.*
 FROM cardDb JOIN card_deck ON cardDb.id = card_deck.cardId
@@ -81,9 +76,13 @@ WHERE card_deck.deckId = :deckId AND card_deck.type = :type;
 deleteDeck:
 DELETE FROM deckDb WHERE id = :deckId;
 
+deleteAllCardsFromDeck:
+DELETE FROM card_deck
+WHERE deckId = :deckId;
+
 deleteCardFromDeck:
 DELETE FROM card_deck
-WHERE cardId = :cardId AND deckId = :deckId;
+WHERE cardId = :cardId AND deckId = :deckId AND type = :type;
 
 updateDeckName:
 UPDATE deckDb
@@ -97,8 +96,3 @@ WHERE card_deck.cardId = :cardId;
 
 getDeckByName:
 SELECT * FROM deckDb WHERE name = :name;
-
-getDeckSize:
-SELECT COUNT(*)
-FROM card_deck
-WHERE deckId = :deckId AND type = :type;
