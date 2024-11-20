@@ -10,6 +10,7 @@ interface DecksDao {
     suspend fun deleteDeck(deckId: Long)
 
     suspend fun getAllDecks(): Flow<List<DeckDb>>
+    suspend fun getDeckById(id: Long): DeckDb?
     suspend fun getDeckByName(name: String): DeckDb?
 
     suspend fun insertCardIntoMainDeck(cardId: Uuid, deckId: Long)
@@ -17,8 +18,8 @@ interface DecksDao {
     suspend fun insertCardsIntoMainDeck(cardIds: List<Uuid>, deckId: Long)
     suspend fun insertCardsIntoSideboard(cardIds: List<Uuid>, deckId: Long)
 
-    suspend fun getCardsFromMainDeck(deckId: Long, type: String): Flow<List<CardDb>>
-    suspend fun getCardsFromSideboard(deckId: Long, type: String): Flow<List<CardDb>>
+    suspend fun getCardsFromMainDeck(deckId: Long): List<CardDb>
+    suspend fun getCardsFromSideboard(deckId: Long): List<CardDb>
 
     suspend fun deleteCardFromMainDeck(cardId: Uuid, deckId: Long)
     suspend fun deleteCardFromSideboard(cardId: Uuid, deckId: Long)

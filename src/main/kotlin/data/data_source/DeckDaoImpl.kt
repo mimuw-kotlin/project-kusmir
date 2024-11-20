@@ -2,6 +2,7 @@ package data.data_source
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import data.local.database.CardDb
 import data.local.database.Database
 import data.local.database.DeckDb
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +30,12 @@ class DeckDaoImpl(
 
     override suspend fun getAllDecks(): Flow<List<DeckDb>> =
         queries.getAllDecks().asFlow().mapToList(Dispatchers.IO)
+
+    override suspend fun getDeckById(id: Long): DeckDb? {
+        return withContext(Dispatchers.IO) {
+            queries.getDeckById(id).executeAsOneOrNull()
+        }
+    }
 
     override suspend fun getDeckByName(name: String): DeckDb? {
         return withContext(Dispatchers.IO) {
@@ -68,11 +75,17 @@ class DeckDaoImpl(
         }
     }
 
-    override suspend fun getCardsFromMainDeck(deckId: Long, type: String) =
-        queries.getCardsFromDeck(deckId, "main").asFlow().mapToList(Dispatchers.IO)
+    override suspend fun getCardsFromMainDeck(deckId: Long): List<CardDb> {
+        return withContext(Dispatchers.IO) {
+            queries.getCardsFromDeck(deckId, "main").executeAsList()
+        }
+    }
 
-    override suspend fun getCardsFromSideboard(deckId: Long, type: String) =
-        queries.getCardsFromDeck(deckId, "side").asFlow().mapToList(Dispatchers.IO)
+    override suspend fun getCardsFromSideboard(deckId: Long): List<CardDb> {
+        return withContext(Dispatchers.IO) {
+            queries.getCardsFromDeck(deckId, "side").executeAsList()
+        }
+    }
 
     override suspend fun deleteCardFromMainDeck(cardId: Uuid, deckId: Long) {
         withContext(Dispatchers.IO) {

@@ -94,5 +94,11 @@ SELECT deckDb.*
 FROM deckDb JOIN card_deck ON deckDb.id = card_deck.deckId
 WHERE card_deck.cardId = :cardId;
 
+getDeckById:
+SELECT * FROM deckDb WHERE id = :id;
+
 getDeckByName:
 SELECT * FROM deckDb WHERE name = :name;
+
+selectLastInsertedDeckId:
+SELECT last_insert_rowid();
