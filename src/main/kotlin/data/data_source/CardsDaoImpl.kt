@@ -36,11 +36,18 @@ class CardsDaoImpl(
         }
     }
 
+    override suspend fun searchCards(query: String, limit: Long): List<String> {
+        return withContext(Dispatchers.IO) {
+            queries.fuzzySearchCard(query, limit).executeAsList()
+        }
+    }
+
     override suspend fun insert(
         id: Uuid,
         name: String,
         colors: List<String>?,
         legalities: Map<String, Boolean>,
+        type: String,
         imageSource: String
     ) {
         withContext(Dispatchers.IO) {
@@ -49,6 +56,7 @@ class CardsDaoImpl(
                 name,
                 colors,
                 legalities,
+                type,
                 imageSource
             )
         }
@@ -62,6 +70,7 @@ class CardsDaoImpl(
                     name,
                     colors,
                     legalities,
+                    type,
                     imageSource
                 )
             }
@@ -77,6 +86,7 @@ class CardsDaoImpl(
                         card.name,
                         card.colors,
                         card.legalities,
+                        card.type,
                         card.imageSource
                     )
                 }
