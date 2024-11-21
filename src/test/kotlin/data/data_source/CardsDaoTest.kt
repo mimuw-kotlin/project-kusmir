@@ -70,6 +70,7 @@ class CardsDaoTest {
         assertNull(dao.getById(sampleCards[0].id))
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun deleteWithIds() = runTest {
         dao.insert(sampleCards[0])
