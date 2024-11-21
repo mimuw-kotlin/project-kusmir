@@ -4,13 +4,20 @@ import kotlin.collections.List;
 import kotlin.uuid.Uuid;
 
 ---TABLE
+
+---DROP TRIGGER IF EXISTS cardDb_after_insert;
+---DROP TRIGGER IF EXISTS cardDb.cardDb_after_update;
+---DROP TRIGGER IF EXISTS cardDb_after_delete;
+
 CREATE TABLE IF NOT EXISTS 'cardDb'(
     'id' BLOB AS Uuid NOT NULL PRIMARY KEY,
     'name' TEXT NOT NULL UNIQUE,
     'colors' TEXT AS List<kotlin.String>,
     'legalities' TEXT AS Map<kotlin.String, kotlin.Boolean> NOT NULL,
+    'type' TEXT NOT NULL,
     'imageSource' TEXT NOT NULL
 );
+
 
 CREATE TABLE IF NOT EXISTS 'deckDb' (
     'id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -21,10 +28,35 @@ CREATE TABLE IF NOT EXISTS 'card_deck' (
     'cardId' BLOB AS Uuid NOT NULL,
     'deckId' INTEGER NOT NULL,
     'type' TEXT NOT NULL CHECK (type IN ('main', 'side')),
-    PRIMARY KEY (cardId, deckId),
     FOREIGN KEY (cardId) REFERENCES cardDb(id) ON DELETE CASCADE,
     FOREIGN KEY (deckId) REFERENCES deckDb(id) ON DELETE CASCADE
 );
+
+---SEARCH TABLE
+CREATE VIRTUAL TABLE IF NOT EXISTS 'cardDb_fts' USING fts4(
+    'id' BLOB AS Uuid NOT NULL PRIMARY KEY,
+    'name' TEXT NOT NULL
+);
+
+CREATE TRIGGER IF NOT EXISTS cardDb_after_insert AFTER INSERT ON cardDb
+BEGIN
+    INSERT INTO cardDb_fts(id, name)
+    VALUES(new.id, new.name);
+END;
+
+
+CREATE TRIGGER IF NOT EXISTS cardDb_after_update AFTER UPDATE ON cardDb
+BEGIN
+    UPDATE cardDb_fts SET
+        name = new.name
+    WHERE id = old.id;
+END;
+
+
+CREATE TRIGGER IF NOT EXISTS cardDb_after_delete AFTER DELETE ON cardDb
+BEGIN
+    DELETE FROM cardDb_fts WHERE id = old.id;
+END;
 
 ---CARD QUERIES
 getById:
@@ -42,18 +74,26 @@ DELETE FROM 'cardDb' WHERE id = :id;
 deleteAllCards:
 DELETE FROM 'cardDb';
 
+fuzzySearchCard:
+SELECT name FROM 'cardDb_fts'
+WHERE name MATCH
+CONCAT(CAST(COALESCE(:query, "") AS TEXT), "*")
+LIMIT :limit;
+
 insertCard:
 INSERT OR REPLACE INTO 'cardDb' (
     'id',
     'name',
     'colors',
     'legalities',
+    'type',
     'imageSource'
 ) VALUES (
     :id,
     :name,
     :colors,
     :legalities,
+    :type,
     :imageSource
 );
 
@@ -73,8 +113,11 @@ SELECT cardDb.*
 FROM cardDb JOIN card_deck ON cardDb.id = card_deck.cardId
 WHERE card_deck.deckId = :deckId AND card_deck.type = :type;
 
-deleteDeck:
+deleteDeckById:
 DELETE FROM deckDb WHERE id = :deckId;
+
+deleteDeckByName:
+DELETE FROM deckDb WHERE name = :name;
 
 deleteAllCardsFromDeck:
 DELETE FROM card_deck
@@ -100,5 +143,5 @@ SELECT * FROM deckDb WHERE id = :id;
 getDeckByName:
 SELECT * FROM deckDb WHERE name = :name;
 
-selectLastInsertedDeckId:
+getLastInsertedDeckId:
 SELECT last_insert_rowid();

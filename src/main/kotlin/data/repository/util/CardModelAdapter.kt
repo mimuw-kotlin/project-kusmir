@@ -15,6 +15,7 @@ fun CardDb.toDomain(): Card {
         colorIdentity = parseColorsList(colors),
         legalities = legalities
             .mapKeys { (key, _) -> parseMtgFormatString(key) },
+        type = type,
         imageSource = imageSource
     )
 }
@@ -39,6 +40,8 @@ fun JsonObject.toDatabase(): CardDb {
         .get(format).asString.let { parseLegalityString(it) }
     }
 
+    val type = get("type_line").asString
+
     val layout = get("layout").asString
     val imageSource = if (layout.equals("transform")
         || layout.equals("modal_dfc") || layout.equals("reversible_card")
@@ -52,7 +55,7 @@ fun JsonObject.toDatabase(): CardDb {
             .get("png").asString
     }
 
-    return CardDb(id, name, colorIdentity, legalities, imageSource)
+    return CardDb(id, name, colorIdentity, legalities, type, imageSource)
 }
 
 private fun parseColor(colorStr: String): MtgColor {

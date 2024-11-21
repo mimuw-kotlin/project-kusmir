@@ -22,13 +22,25 @@ class DeckDaoImpl(
         }
     }
 
-    override suspend fun deleteDeck(deckId: Long) {
-        withContext(Dispatchers.IO) {
-            queries.deleteDeck(deckId)
+    override suspend fun getLastInsertedDeckId(): Long {
+        return withContext(Dispatchers.IO) {
+            queries.getLastInsertedDeckId().executeAsOne()
         }
     }
 
-    override suspend fun getAllDecks(): Flow<List<DeckDb>> =
+    override suspend fun deleteDeckById(deckId: Long) {
+        withContext(Dispatchers.IO) {
+            queries.deleteDeckById(deckId)
+        }
+    }
+
+    override suspend fun deleteDeckByName(name: String) {
+        withContext(Dispatchers.IO) {
+            queries.deleteDeckByName(name)
+        }
+    }
+
+    override fun getAllDecks(): Flow<List<DeckDb>> =
         queries.getAllDecks().asFlow().mapToList(Dispatchers.IO)
 
     override suspend fun getDeckById(id: Long): DeckDb? {

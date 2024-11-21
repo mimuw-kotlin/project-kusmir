@@ -60,6 +60,7 @@ class CardsRepositoryImpl(
                     allCards.add(jsonObject.toDatabase())
 
                     if (allCards.size >= 5000) {
+                        println(allCards)
                         cardsDao.insertMultiple(allCards)
                         allCards.clear()
                     }
@@ -71,5 +72,9 @@ class CardsRepositoryImpl(
         }
 
         tempFile.delete()
+    }
+
+    override suspend fun getCardsSearchResults(query: String, limit: Long): List<String> {
+        return cardsDao.searchCards(query, limit)
     }
 }

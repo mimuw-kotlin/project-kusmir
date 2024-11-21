@@ -7,9 +7,11 @@ import kotlin.uuid.Uuid
 
 interface DecksDao {
     suspend fun createDeck(name: String)
-    suspend fun deleteDeck(deckId: Long)
+    suspend fun getLastInsertedDeckId(): Long
+    suspend fun deleteDeckById(deckId: Long)
+    suspend fun deleteDeckByName(name: String)
 
-    suspend fun getAllDecks(): Flow<List<DeckDb>>
+    fun getAllDecks(): Flow<List<DeckDb>>
     suspend fun getDeckById(id: Long): DeckDb?
     suspend fun getDeckByName(name: String): DeckDb?
 

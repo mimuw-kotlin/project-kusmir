@@ -23,6 +23,7 @@ dependencies {
     implementation(libs.sqldelight.coroutines)
     implementation(libs.sqldelight.desktop)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.swing)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.apache)
@@ -35,9 +36,13 @@ dependencies {
     implementation(libs.kotlinx.coroutines.test)
     implementation("app.softwork:kotlinx-uuid-sqldelight:0.1.2")
     implementation("app.softwork:kotlinx-uuid-core-jvm:0.1.2")
-
     implementation("com.google.code.gson:gson:2.10.1")
     testImplementation(kotlin("test"))
+    implementation("org.slf4j:slf4j-api:2.0.7") // Ensure you use the latest version
+    implementation("ch.qos.logback:logback-classic:1.4.11") // Ensure you use the latest version
+    implementation(compose.materialIconsExtended)
+    implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
 }
 
 sqldelight {

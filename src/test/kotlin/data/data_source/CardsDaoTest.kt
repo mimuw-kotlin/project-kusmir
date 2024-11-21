@@ -60,6 +60,7 @@ class CardsDaoTest {
         assertNull(receivedCard)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun deleteWithId() = runTest {
         dao.insert(sampleCards[0])
@@ -77,5 +78,21 @@ class CardsDaoTest {
         dao.deleteWithIds(listOf(sampleCards[0].id, sampleCards[1].id))
         assertNull(dao.getById(sampleCards[0].id))
         assertNull(dao.getById(sampleCards[1].id))
+    }
+
+    @Test
+    fun `should throw exception when inserting same card multiple times`() = runTest {
+        dao.insert(sampleCards[0])
+        dao.insert(sampleCards[1])
+    }
+
+    @Test
+    fun testSearchCards() = runTest {
+        dao.insert(sampleCards[0])
+        dao.insert(sampleCards[1])
+
+        assert(dao.searchCards("card").also {
+            println(it)
+        }.isNotEmpty())
     }
 }

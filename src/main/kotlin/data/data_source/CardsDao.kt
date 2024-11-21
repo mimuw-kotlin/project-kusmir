@@ -8,11 +8,13 @@ interface CardsDao {
     suspend fun getByName(name: String): CardDb?
     suspend fun deleteWithId(id: Uuid)
     suspend fun deleteWithIds(ids: List<Uuid>)
+    suspend fun searchCards(query: String, limit: Long = 10): List<String>
     suspend fun insert(
         id: Uuid,
         name: String,
         colors: List<String>?,
         legalities: Map<String, Boolean>,
+        type: String,
         imageSource: String
     )
     suspend fun insert(card: CardDb)

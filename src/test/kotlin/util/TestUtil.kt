@@ -5,6 +5,7 @@ package util
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import app.softwork.uuid.sqldelight.UuidByteArrayAdapter
 import data.local.database.CardDb
+import data.local.database.Card_deck
 import data.local.database.Database
 import data.sqldelight.CustomAdaptersImpl
 import kotlin.uuid.ExperimentalUuidApi
@@ -22,6 +23,9 @@ internal fun mockCardDatabase(): Database {
             idAdapter = UuidByteArrayAdapter,
             colorsAdapter = CustomAdaptersImpl().ListStringAdapter(),
             legalitiesAdapter = CustomAdaptersImpl().legalitiesAdapter()
+        ),
+        card_deckAdapter = Card_deck.Adapter(
+            cardIdAdapter = UuidByteArrayAdapter
         )
     )
 }
@@ -35,6 +39,7 @@ internal fun sampleCardDbList(): List<CardDb> = listOf(
             "standard" to false,
             "pioneer" to true
         ),
+        type = "Creature",
         imageSource = "invalid/image/source"
     ),
     CardDb(
@@ -46,6 +51,7 @@ internal fun sampleCardDbList(): List<CardDb> = listOf(
             "standard" to true,
             "pioneer" to true
         ),
+        type = "Instant",
         imageSource = "invalid/image/source"
     ),
 )

@@ -31,7 +31,7 @@ class ScryfallApiMock(
     override suspend fun getCardsChannel(type: String): ByteReadChannel {
         val filePath = javaClass.classLoader.getResource(bulkFileName)
             ?.path
-            ?: throw IllegalArgumentException("OracleCardsMock.json not found")
+            ?: throw IllegalArgumentException("$bulkFileName not found")
 
         val file = File(filePath)
         return file.readChannel()
