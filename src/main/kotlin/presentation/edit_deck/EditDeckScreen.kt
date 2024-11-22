@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import domain.model.Deck
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -22,8 +23,8 @@ import presentation.edit_deck.components.ImportDeckPopup
 @OptIn(KoinExperimentalAPI::class)
 @Composable
 fun EditDeckScreen(
+    navController: NavController,
     viewModel: EditDeckViewModel = koinViewModel(),
-    deckId: Long?
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -172,6 +173,7 @@ fun EditDeckScreen(
                         onClick = {
                             viewModel.onEvent(EditDeckEvent.EnteredDeckName(state.deckName))
                             viewModel.onEvent(EditDeckEvent.SaveDeck)
+                            navController.navigateUp()
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -179,6 +181,19 @@ fun EditDeckScreen(
 
                     ) {
                         Text("Save Deck")
+                    }
+
+                    Button(
+                        onClick = {
+                            viewModel.onEvent(EditDeckEvent.DeleteDeck)
+                            navController.navigateUp()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+
+                    ) {
+                        Text("Delete deck")
                     }
 
                     Button(

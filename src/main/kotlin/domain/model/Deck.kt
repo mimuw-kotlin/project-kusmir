@@ -6,7 +6,6 @@ class MutableDeckList(
     fun toDeckList(): DeckList = DeckList(cardMap.toMap())
 
     fun addCard(card: Card, count: Int = 1) {
-        println("cardMap[card]: ${cardMap[card]}")
         cardMap[card] = cardMap.getOrDefault(card, 0) + count
     }
 
@@ -49,7 +48,9 @@ data class DeckList(
         MutableDeckList(cardMap.toMutableMap())
 
     fun toCardsList(): List<Card> =
-        cardMap.flatMap { (key, count) -> List(count) { key } }
+        cardMap.flatMap { (key, count) -> List(count) { key } }.also{
+            println(it.map{card -> card.name})
+        }
 
     override val entries: Set<Map.Entry<Card, Int>>
         get() = cardMap.entries

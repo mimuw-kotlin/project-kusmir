@@ -59,6 +59,7 @@ fun DecksScreen(
                             },
                             indication = null,
                             onClick = {
+                                println(deck.id)
                                 navController.navigate(Screen.EditDeck(deck.id))
                             }
                         )

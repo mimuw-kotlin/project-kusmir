@@ -42,8 +42,8 @@ fun MainApp() {
         composable<Screen.EditDeck> {
             val args = it.toRoute<Screen.EditDeck>()
             EditDeckScreen(
+                navController = navController,
                 viewModel = koinViewModel(parameters = { parametersOf(args.deckId) }),
-                deckId = args.deckId
             )
         }
     }

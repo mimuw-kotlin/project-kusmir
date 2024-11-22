@@ -30,6 +30,7 @@ import domain.use_cases.deck.GetAllDecksUseCase
 import domain.use_cases.deck.FetchAndUpdateCardsUseCase
 import domain.use_cases.deck.SaveDeckUseCase
 import domain.use_cases.deck.ImportDeckUseCase
+import domain.use_cases.deck.DeleteDeckUseCase
 import domain.use_cases.cards.CardsUseCases
 import domain.use_cases.cards.GetCardsSearchResultsUseCase
 import domain.use_cases.cards.GetCardByNameUseCase
@@ -65,6 +66,7 @@ val module = module {
     singleOf(::SaveDeckUseCase)
     singleOf(::FetchAndUpdateCardsUseCase)
     singleOf(::ImportDeckUseCase)
+    singleOf(::DeleteDeckUseCase)
 
     singleOf(::CardsUseCases)
     singleOf(::GetCardsSearchResultsUseCase)
