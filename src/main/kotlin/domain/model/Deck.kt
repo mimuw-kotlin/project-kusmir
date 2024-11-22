@@ -18,6 +18,9 @@ class MutableDeckList(
         }
     }
 
+    val totalSize: Int
+        get() = cardMap.values.sum()
+
     override val entries: MutableSet<MutableMap.MutableEntry<Card, Int>>
         get() = cardMap.entries
     override val keys: MutableSet<Card>
@@ -51,6 +54,9 @@ data class DeckList(
         cardMap.flatMap { (key, count) -> List(count) { key } }.also{
             println(it.map{card -> card.name})
         }
+
+    val totalSize: Int
+        get() = cardMap.values.sum()
 
     override val entries: Set<Map.Entry<Card, Int>>
         get() = cardMap.entries

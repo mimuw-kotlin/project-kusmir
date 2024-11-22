@@ -10,7 +10,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import domain.model.Deck
 import org.koin.compose.viewmodel.koinViewModel
@@ -19,6 +22,7 @@ import presentation.components.DeckItem
 import presentation.edit_deck.components.AddCardMenu
 import presentation.edit_deck.components.CardItem
 import presentation.edit_deck.components.ImportDeckPopup
+import presentation.edit_deck.util.groups
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
@@ -50,36 +54,40 @@ fun EditDeckScreen(
                                 .padding(4.dp)
                                 .background(Color.LightGray)
                         ) {
-                            LazyColumn(
+                            Column (
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(8.dp)
                                     .background(Color.Transparent)
                             ) {
-                                item {
-                                    Text("Main Deck", style = MaterialTheme.typography.h5)
-                                }
-                                items(state.mainDeck.toList()) { (card, count) ->
-                                    CardItem(
-                                        count = count,
-                                        cardName = card.name,
-                                        onAdd = {
-                                            viewModel.onEvent(
-                                                EditDeckEvent.AddCard(
-                                                    cardName = it,
-                                                    type = Deck.ListType.MainDeck
-                                                ),
+                                Text("Main Deck (${state.mainDeck.totalSize})", style = MaterialTheme.typography.h5)
+                                LazyColumn(
+                                ) {
+                                    for ((groupName, cards) in state.mainDeck.groups()) {
+                                        item {
+                                            Spacer(Modifier.height(4.dp))
+                                            Text(
+                                                "$groupName (${cards.totalSize})",
+                                                style = TextStyle(
+                                                    fontSize = 16.sp,
+                                                    fontWeight = FontWeight.Bold
+                                                )
                                             )
-                                        },
-                                        onRemove = {
-                                            viewModel.onEvent(
-                                                EditDeckEvent.RemoveCard(
-                                                    cardName = it,
-                                                    type = Deck.ListType.MainDeck
-                                                ),
+                                        }
+
+                                        items(cards.toList()) { (card, count) ->
+                                            CardItem(
+                                                count = count,
+                                                cardName = card.name,
+                                                onAdd = {
+                                                    viewModel.onEvent(EditDeckEvent.AddCard(it, Deck.ListType.MainDeck))
+                                                },
+                                                onRemove = {
+                                                    viewModel.onEvent(EditDeckEvent.RemoveCard(it, Deck.ListType.MainDeck))
+                                                },
                                             )
-                                        },
-                                    )
+                                        }
+                                    }
                                 }
                             }
                         }
