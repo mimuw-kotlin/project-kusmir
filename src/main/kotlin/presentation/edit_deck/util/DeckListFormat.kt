@@ -9,10 +9,7 @@ class FormattedDeckList(
     data class Group(
         val groupName: String,
         val list: DeckList,
-    ) {
-        val size: Int
-            get() = list.totalSize
-    }
+    )
 
     companion object {
         private val groupTypes = mapOf(

@@ -1,6 +1,5 @@
 package domain.use_cases.deck
 
-import domain.model.Deck
 import domain.repository.DecksRepository
 
 class DeleteDeckUseCase(

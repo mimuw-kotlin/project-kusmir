@@ -1,7 +1,5 @@
 package domain.use_cases.deck
 
-import presentation.edit_deck.EditDeckEvent
-
 data class DecksUseCases(
     val getDeck: GetDeckUseCase,
     val getAllDecks: GetAllDecksUseCase,

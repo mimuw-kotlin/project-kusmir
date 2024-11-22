@@ -2,7 +2,6 @@ package presentation.edit_deck
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import domain.model.Deck
 import domain.model.DeckList
 import domain.use_cases.cards.CardsUseCases
@@ -38,15 +37,6 @@ class EditDeckViewModel(
                 )
             }
         }
-    }
-
-    data class Section(
-        val name: String,
-        val cardNamesWithCount: List<Pair<String, Long>>
-    )
-
-    fun getFormattedDeckList(): List<Section> {
-        return listOf(Section("asdf", emptyList()))
     }
 
     fun onEvent(event: EditDeckEvent) {

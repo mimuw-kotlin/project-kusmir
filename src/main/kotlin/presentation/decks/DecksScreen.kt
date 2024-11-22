@@ -3,8 +3,6 @@ package presentation.decks
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -21,7 +19,6 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import presentation.Screen
 import presentation.components.DeckItem
-import presentation.decks.components.DeckGridItem
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable

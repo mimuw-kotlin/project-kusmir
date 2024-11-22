@@ -3,7 +3,6 @@ package data.repository
 import data.data_source.DecksDao
 import data.local.database.DeckDb
 import data.repository.util.toDomain
-import domain.model.Card
 import domain.model.Deck
 import domain.model.DeckList
 import domain.repository.DecksRepository

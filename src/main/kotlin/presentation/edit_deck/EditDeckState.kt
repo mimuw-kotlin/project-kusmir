@@ -1,8 +1,6 @@
 package presentation.edit_deck
 
-import domain.model.Card
 import domain.model.DeckList
-import domain.model.MutableDeckList
 
 data class SearchBoxState(
     val query: String = "",
