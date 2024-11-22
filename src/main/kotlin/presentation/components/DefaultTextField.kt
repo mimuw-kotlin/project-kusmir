@@ -41,7 +41,6 @@ fun DefaultTextField(
     textStyle: TextStyle = TextStyle(fontSize = 16.sp),
     singleLine: Boolean = true,
 ) {
-    var enabled by remember { mutableStateOf(true) }
     val interactionSource = remember { MutableInteractionSource() }
 
     BasicTextField(
@@ -54,7 +53,7 @@ fun DefaultTextField(
             TextFieldDefaults.OutlinedTextFieldDecorationBox(
                 value = value,
                 innerTextField = innerTextField,
-                enabled = enabled,
+                enabled = true,
                 singleLine = singleLine,
                 visualTransformation = VisualTransformation.None,
                 interactionSource = interactionSource,

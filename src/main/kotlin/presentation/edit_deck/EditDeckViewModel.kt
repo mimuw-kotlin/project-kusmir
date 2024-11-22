@@ -163,6 +163,26 @@ class EditDeckViewModel(
                     ),
                 )
             }
+
+            is EditDeckEvent.ToggleImportPopup -> {
+                _state.value = state.value.copy(
+                    importDeckState = state.value.importDeckState.copy(
+                        isVisible = !state.value.importDeckState.isVisible
+                    )
+                )
+            }
+
+            is EditDeckEvent.EnteredDeckImportValue -> {
+                println("State: ${state.value.importDeckState.input}")
+                println("Input: ${event.input}")
+                _state.value = state.value.copy(
+                    importDeckState = state.value.importDeckState.copy(
+                        input = event.input
+                    )
+                )
+            }
+
+            is EditDeckEvent.ImportDeck -> TODO()
         }
     }
 

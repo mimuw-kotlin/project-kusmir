@@ -18,6 +18,11 @@ data class ChooseImageState(
     val isVisible: Boolean = false,
 )
 
+data class ImportDeckState(
+    val isVisible: Boolean = false,
+    val input: String = "",
+)
+
 data class EditDeckState(
     val deckId: Long = -1,
     val name: String = "",
@@ -26,5 +31,6 @@ data class EditDeckState(
     val sideboardCardCountMap: MutableMap<Card, Int> = mutableMapOf(),
 
     val addCardMenuState: AddCardMenuState = AddCardMenuState(),
-    val chooseImageState: ChooseImageState = ChooseImageState()
+    val chooseImageState: ChooseImageState = ChooseImageState(),
+    val importDeckState: ImportDeckState = ImportDeckState(),
 )

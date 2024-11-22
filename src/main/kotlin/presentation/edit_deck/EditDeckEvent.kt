@@ -10,4 +10,9 @@ sealed class EditDeckEvent {
     data object SaveDeck: EditDeckEvent()
     data object ToggleAddCardMenu: EditDeckEvent()
     data class SelectTargetDeckListType(val id: Int): EditDeckEvent()
+
+    // Import deck events
+    data object ToggleImportPopup: EditDeckEvent()
+    data class EnteredDeckImportValue(val input: String): EditDeckEvent()
+    data object ImportDeck: EditDeckEvent()
 }
