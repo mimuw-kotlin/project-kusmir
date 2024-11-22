@@ -57,7 +57,7 @@ class EditDeckViewModel(
                     val card = cardsUseCases.getCardByName(event.cardName)
 
                     assert(event.type == null)
-                    val target = event.type?: if (state.value.selectedDeckTypeId == 0) {
+                    val target = event.type?: if (state.value.addCardMenuState.selectedDeckTypeId == 0) {
                         Deck.ListType.MainDeck
                     } else {
                         Deck.ListType.Sideboard
@@ -76,7 +76,11 @@ class EditDeckViewModel(
                         }
 
                         _state.value = state.value.copy(
-                            cardsSearchQuery = ""
+                            addCardMenuState = state.value.addCardMenuState.copy(
+                                searchBoxState = state.value.addCardMenuState.searchBoxState.copy(
+                                    query = ""
+                                )
+                            )
                         )
                     }
                 }
@@ -89,11 +93,19 @@ class EditDeckViewModel(
 
             is EditDeckEvent.CardSearch -> {
                 _state.value = state.value.copy(
-                    cardsSearchQuery = event.query,
+                    addCardMenuState = state.value.addCardMenuState.copy(
+                        searchBoxState = state.value.addCardMenuState.searchBoxState.copy(
+                            query = event.query
+                        )
+                    )
                 )
                 viewModelScope.launch {
                     _state.value = state.value.copy(
-                        cardsSearchResults = cardsUseCases.getSearchResults(event.query)
+                        addCardMenuState = state.value.addCardMenuState.copy(
+                            searchBoxState = state.value.addCardMenuState.searchBoxState.copy(
+                                results = cardsUseCases.getSearchResults(event.query)
+                            )
+                        )
                     )
                 }
             }
@@ -138,13 +150,17 @@ class EditDeckViewModel(
 
             is EditDeckEvent.ToggleAddCardMenu -> {
                 _state.value = state.value.copy(
-                    isAddCardMenuExpanded = !state.value.isAddCardMenuExpanded
+                    addCardMenuState = state.value.addCardMenuState.copy(
+                        isExpanded = !state.value.addCardMenuState.isExpanded
+                    ),
                 )
             }
 
             is EditDeckEvent.SelectTargetDeckListType -> {
                 _state.value = state.value.copy(
-                    selectedDeckTypeId = event.id
+                    addCardMenuState = state.value.addCardMenuState.copy(
+                        selectedDeckTypeId = event.id
+                    ),
                 )
             }
         }

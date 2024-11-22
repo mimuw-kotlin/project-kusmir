@@ -150,12 +150,12 @@ fun EditDeckScreen(
                     Spacer(Modifier.height(8.dp))
 
                     AddCardMenu(
-                        isExpanded = state.isAddCardMenuExpanded,
+                        isExpanded = state.addCardMenuState.isExpanded,
                         onExpand = {
                             viewModel.onEvent(EditDeckEvent.ToggleAddCardMenu)
                         },
-                        cardQueryText = state.cardsSearchQuery,
-                        cardQueryResults = state.cardsSearchResults,
+                        cardQueryText = state.addCardMenuState.searchBoxState.query,
+                        cardQueryResults = state.addCardMenuState.searchBoxState.results,
                         onCardSearch = {
                             viewModel.onEvent(EditDeckEvent.CardSearch(it))
                         },
@@ -165,7 +165,7 @@ fun EditDeckScreen(
                         onDeckTypeSelected = {
                             viewModel.onEvent(EditDeckEvent.SelectTargetDeckListType(it))
                         },
-                        selectedDeckListTypeId = state.selectedDeckTypeId
+                        selectedDeckListTypeId = state.addCardMenuState.selectedDeckTypeId
                     )
 
                     Spacer(Modifier.weight(1f))
