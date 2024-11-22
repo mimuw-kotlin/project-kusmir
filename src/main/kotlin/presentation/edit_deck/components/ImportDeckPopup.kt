@@ -4,6 +4,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +21,7 @@ fun ImportDeckPopup(
     input: String,
     modifier: Modifier,
     onClickOutside: () -> Unit,
+    onSubmit: () -> Unit,
     onValueChange: (String) -> Unit,
 ) {
     PopupBox(
@@ -46,10 +48,17 @@ fun ImportDeckPopup(
                         singleLine = false,
                         placeholder = "",
                         modifier = Modifier
+                            .weight(0.7f)
                             .fillMaxWidth()
                             .fillMaxHeight()
                             .padding(16.dp),
                     )
+
+                    Button(
+                        onClick = { onSubmit() },
+                    ) {
+                        Text("Import")
+                    }
                 }
             }
         }

@@ -5,11 +5,12 @@ class MutableDeckList(
 ) : MutableMap<Card, Int> {
     fun toDeckList(): DeckList = DeckList(cardMap.toMap())
 
-    fun add(card: Card, count: Int = 1) {
+    fun addCard(card: Card, count: Int = 1) {
+        println("cardMap[card]: ${cardMap[card]}")
         cardMap[card] = cardMap.getOrDefault(card, 0) + count
     }
 
-    fun remove(card: Card, count: Int = 1) {
+    fun removeCard(card: Card, count: Int = 1) {
         val currentCount = cardMap[card] ?: return
         if (currentCount > count) {
             cardMap[card] = currentCount - count

@@ -29,6 +29,7 @@ import presentation.decks.DecksViewModel
 import domain.use_cases.deck.GetAllDecksUseCase
 import domain.use_cases.deck.FetchAndUpdateCardsUseCase
 import domain.use_cases.deck.SaveDeckUseCase
+import domain.use_cases.deck.ImportDeckUseCase
 import domain.use_cases.cards.CardsUseCases
 import domain.use_cases.cards.GetCardsSearchResultsUseCase
 import domain.use_cases.cards.GetCardByNameUseCase
@@ -63,6 +64,7 @@ val module = module {
     singleOf(::GetAllDecksUseCase)
     singleOf(::SaveDeckUseCase)
     singleOf(::FetchAndUpdateCardsUseCase)
+    singleOf(::ImportDeckUseCase)
 
     singleOf(::CardsUseCases)
     singleOf(::GetCardsSearchResultsUseCase)

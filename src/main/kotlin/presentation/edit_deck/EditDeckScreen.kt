@@ -203,6 +203,7 @@ fun EditDeckScreen(
                 onValueChange = {
                     viewModel.onEvent(EditDeckEvent.EnteredDeckImportValue(it))
                 },
+                onSubmit = { viewModel.onEvent(EditDeckEvent.ImportDeck) },
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
                     .fillMaxHeight(0.8f)

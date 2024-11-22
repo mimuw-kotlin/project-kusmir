@@ -2,10 +2,8 @@ package presentation.edit_deck
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import domain.model.Card
 import domain.model.Deck
 import domain.model.DeckList
-import domain.model.MutableDeckList
 import domain.use_cases.cards.CardsUseCases
 import domain.use_cases.deck.DecksUseCases
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -64,18 +62,21 @@ class EditDeckViewModel(
                     }
 
                     card?.let {
+                        println(it.name)
                         when (target) {
                             Deck.ListType.MainDeck ->
                                 _state.value = state.value.copy(
-                                    mainDeck = _state.value.sideboard.apply {
-                                        this.toMutableDeckList().apply { this.add(card) }
-                                    }
+                                    mainDeck = _state.value.mainDeck
+                                        .toMutableDeckList()
+                                        .apply { addCard(card) }
+                                        .toDeckList()
                                 )
                             Deck.ListType.Sideboard ->
                                 _state.value = state.value.copy(
-                                    sideboard = _state.value.sideboard.apply {
-                                        this.toMutableDeckList().apply { this.add(card) }
-                                    }
+                                    sideboard = _state.value.sideboard
+                                        .toMutableDeckList()
+                                        .apply { addCard(card) }
+                                        .toDeckList()
                                 )
                         }
 
@@ -121,15 +122,17 @@ class EditDeckViewModel(
                         when (event.type) {
                             Deck.ListType.MainDeck ->
                                 _state.value = state.value.copy(
-                                    mainDeck = _state.value.mainDeck.apply {
-                                        this.toMutableDeckList().apply { this.remove(card) }
-                                    }
+                                    mainDeck = _state.value.mainDeck
+                                        .toMutableDeckList()
+                                        .apply { removeCard(card) }
+                                        .toDeckList()
                                 )
                             Deck.ListType.Sideboard ->
                                 _state.value = state.value.copy(
-                                    sideboard = _state.value.sideboard.apply {
-                                        this.toMutableDeckList().apply { this.remove(card) }
-                                    }
+                                    sideboard = _state.value.sideboard
+                                        .toMutableDeckList()
+                                        .apply { removeCard(card) }
+                                        .toDeckList()
                                 )
                         }
                     }
@@ -171,7 +174,8 @@ class EditDeckViewModel(
             is EditDeckEvent.ToggleImportPopup -> {
                 _state.value = state.value.copy(
                     importDeckState = state.value.importDeckState.copy(
-                        isVisible = !state.value.importDeckState.isVisible
+                        isVisible = !state.value.importDeckState.isVisible,
+                        input = "",
                     )
                 )
             }
@@ -184,7 +188,27 @@ class EditDeckViewModel(
                 )
             }
 
-            is EditDeckEvent.ImportDeck -> TODO()
+            is EditDeckEvent.ImportDeck -> {
+                val deckCode = state.value.importDeckState.input
+                _state.value = state.value.copy(
+                    importDeckState = state.value.importDeckState.copy(
+                        isVisible = false,
+                        input = "",
+                    )
+                )
+
+                viewModelScope.launch {
+                    try {
+                        val deck = deckUseCases.importDeck(deckCode)
+                        _state.value = state.value.copy(
+                            mainDeck = deck.mainDeck,
+                            sideboard = deck.sideboard,
+                        )
+                    } catch (e: IllegalArgumentException) {
+                        println(e.message) // TODO: error popup
+                    }
+                }
+            }
         }
     }
 }
