@@ -1,6 +1,8 @@
 package presentation.edit_deck
 
 import domain.model.Card
+import domain.model.DeckList
+import domain.model.MutableDeckList
 
 data class SearchBoxState(
     val query: String = "",
@@ -25,10 +27,10 @@ data class ImportDeckState(
 
 data class EditDeckState(
     val deckId: Long = -1,
-    val name: String = "",
+    val deckName: String = "",
     val imageUrl: String = "",
-    val mainDeckCardCountMap: MutableMap<Card, Int> = mutableMapOf(),
-    val sideboardCardCountMap: MutableMap<Card, Int> = mutableMapOf(),
+    val mainDeck: DeckList = DeckList(),
+    val sideboard: DeckList = DeckList(),
 
     val addCardMenuState: AddCardMenuState = AddCardMenuState(),
     val chooseImageState: ChooseImageState = ChooseImageState(),

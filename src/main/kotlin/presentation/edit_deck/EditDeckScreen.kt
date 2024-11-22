@@ -1,11 +1,9 @@
 package presentation.edit_deck
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,8 +15,6 @@ import domain.model.Deck
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import presentation.components.DeckItem
-import presentation.components.DefaultTextField
-import presentation.components.PopupBox
 import presentation.edit_deck.components.AddCardMenu
 import presentation.edit_deck.components.CardItem
 import presentation.edit_deck.components.ImportDeckPopup
@@ -30,9 +26,6 @@ fun EditDeckScreen(
     deckId: Long?
 ) {
     val state by viewModel.state.collectAsState()
-    val scope = rememberCoroutineScope()
-
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     Scaffold(
         content = {
@@ -65,7 +58,7 @@ fun EditDeckScreen(
                                 item {
                                     Text("Main Deck", style = MaterialTheme.typography.h5)
                                 }
-                                items(state.mainDeckCardCountMap.toList()) { (card, count) ->
+                                items(state.mainDeck.toList()) { (card, count) ->
                                     CardItem(
                                         count = count,
                                         cardName = card.name,
@@ -107,7 +100,7 @@ fun EditDeckScreen(
                                 item {
                                     Text("Sideboard", style = MaterialTheme.typography.h5)
                                 }
-                                items(state.sideboardCardCountMap.toList()) { (card, count) ->
+                                items(state.sideboard.toList()) { (card, count) ->
                                     CardItem(
                                         count = count,
                                         cardName = card.name,
@@ -147,7 +140,7 @@ fun EditDeckScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     DeckItem(
-                        deckName = state.name,
+                        deckName = state.deckName,
                         onDeckNameChanged = { viewModel.onEvent(EditDeckEvent.EnteredDeckName(it)) },
                         deckImageUrl = state.imageUrl,
                     )
@@ -177,7 +170,7 @@ fun EditDeckScreen(
 
                     Button(
                         onClick = {
-                            viewModel.onEvent(EditDeckEvent.EnteredDeckName(state.name))
+                            viewModel.onEvent(EditDeckEvent.EnteredDeckName(state.deckName))
                             viewModel.onEvent(EditDeckEvent.SaveDeck)
                         },
                         modifier = Modifier

@@ -9,4 +9,14 @@ data class Card (
     val legalities: Map<MtgFormat, Boolean>,
     val type: String,
     val imageSource: String,
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Card) return false
+        return id == other.id
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+}

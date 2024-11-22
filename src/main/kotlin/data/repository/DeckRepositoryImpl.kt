@@ -5,6 +5,7 @@ import data.local.database.DeckDb
 import data.repository.util.toDomain
 import domain.model.Card
 import domain.model.Deck
+import domain.model.DeckList
 import domain.repository.DecksRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -16,20 +17,20 @@ class DeckRepositoryImpl(
         Deck(
             id = this.id,
             name = this.name,
-            mainDeck = dao.getCardsFromMainDeck(this.id).map { it.toDomain() },
-            sideboard = dao.getCardsFromSideboard(this.id).map { it.toDomain() }
+            mainDeck = DeckList(dao.getCardsFromMainDeck(this.id).map { it.toDomain() }),
+            sideboard = DeckList(dao.getCardsFromSideboard(this.id).map { it.toDomain() })
         )
 
-    override suspend fun createDeck(name: String, mainCards: List<Card>, sideCards: List<Card>): Long {
+    override suspend fun createDeck(name: String, mainDeck: DeckList, sideboard: DeckList): Long {
         dao.createDeck(name)
         val deckId = dao.getLastInsertedDeckId()
 
         dao.insertCardsIntoMainDeck(
-            mainCards.map { it.id }, deckId
+            mainDeck.toCardsList().map { it.id }, deckId
         )
 
         dao.insertCardsIntoSideboard(
-            sideCards.map { it.id }, deckId
+            sideboard.toCardsList().map { it.id }, deckId
         )
 
         return deckId
@@ -47,11 +48,11 @@ class DeckRepositoryImpl(
         dao.deleteAllCardsFromDeck(deck.id)
 
         dao.insertCardsIntoMainDeck(
-            deck.mainDeck.map { it.id }, deck.id
+            deck.mainDeck.toCardsList().map { it.id }, deck.id
         )
 
         dao.insertCardsIntoSideboard(
-            deck.sideboard.map { it.id }, deck.id
+            deck.sideboard.toCardsList().map { it.id }, deck.id
         )
     }
 

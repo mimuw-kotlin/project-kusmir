@@ -2,10 +2,11 @@ package domain.repository
 
 import domain.model.Card
 import domain.model.Deck
+import domain.model.DeckList
 import kotlinx.coroutines.flow.Flow
 
 interface DecksRepository {
-    suspend fun createDeck(name: String, mainCards: List<Card>, sideCards: List<Card>): Long
+    suspend fun createDeck(name: String, mainDeck: DeckList, sideboard: DeckList): Long
     suspend fun deleteDeckById(id: Long)
     suspend fun deleteDeckByName(name: String)
     suspend fun saveDeck(deck: Deck)

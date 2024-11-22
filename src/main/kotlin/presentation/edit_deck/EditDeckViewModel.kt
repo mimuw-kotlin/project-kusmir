@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import domain.model.Card
 import domain.model.Deck
+import domain.model.DeckList
+import domain.model.MutableDeckList
 import domain.use_cases.cards.CardsUseCases
 import domain.use_cases.deck.DecksUseCases
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,21 +24,19 @@ class EditDeckViewModel(
     init {
         viewModelScope.launch {
             _state.value = state.value.copy(
-                name = "New deck",
+                deckName = "New deck",
                 imageUrl = "https://cards.scryfall.io/normal/front/5/6/56ebc372-aabd-4174-a943-c7bf59e5028d.jpg?1562629953",
-                mainDeckCardCountMap = mutableMapOf(),
-                sideboardCardCountMap = mutableMapOf()
+                mainDeck = DeckList(),
+                sideboard= DeckList()
             )
-            println("DONE1")
 
             deckUseCases.getDeck(deckId)?.also { deck ->
                 _state.value = state.value.copy(
-                    name = deck.name,
+                    deckName = deck.name,
                     imageUrl = "https://cards.scryfall.io/normal/front/5/6/56ebc372-aabd-4174-a943-c7bf59e5028d.jpg?1562629953",
-                    mainDeckCardCountMap = deck.mainDeck.toCardCountMap(),
-                    sideboardCardCountMap = deck.sideboard.toCardCountMap()
+                    mainDeck = deck.mainDeck,
+                    sideboard = deck.sideboard,
                 )
-                println("DONE ${state.value.name}")
             }
         }
     }
@@ -67,11 +67,15 @@ class EditDeckViewModel(
                         when (target) {
                             Deck.ListType.MainDeck ->
                                 _state.value = state.value.copy(
-                                    mainDeckCardCountMap = _state.value.mainDeckCardCountMap.addCard(card)
+                                    mainDeck = _state.value.sideboard.apply {
+                                        this.toMutableDeckList().apply { this.add(card) }
+                                    }
                                 )
                             Deck.ListType.Sideboard ->
                                 _state.value = state.value.copy(
-                                    sideboardCardCountMap = _state.value.sideboardCardCountMap.addCard(card)
+                                    sideboard = _state.value.sideboard.apply {
+                                        this.toMutableDeckList().apply { this.add(card) }
+                                    }
                                 )
                         }
 
@@ -87,8 +91,8 @@ class EditDeckViewModel(
             }
 
             is EditDeckEvent.EnteredDeckName -> {
-                _state.value = state.value.copy(name = event.name)
-                println("name: ${state.value.name}")
+                _state.value = state.value.copy(deckName = event.name)
+                println("name: ${state.value.deckName}")
             }
 
             is EditDeckEvent.CardSearch -> {
@@ -117,11 +121,15 @@ class EditDeckViewModel(
                         when (event.type) {
                             Deck.ListType.MainDeck ->
                                 _state.value = state.value.copy(
-                                    mainDeckCardCountMap = _state.value.mainDeckCardCountMap.removeCard(card)
+                                    mainDeck = _state.value.mainDeck.apply {
+                                        this.toMutableDeckList().apply { this.remove(card) }
+                                    }
                                 )
                             Deck.ListType.Sideboard ->
                                 _state.value = state.value.copy(
-                                    sideboardCardCountMap = _state.value.sideboardCardCountMap.removeCard(card)
+                                    sideboard = _state.value.sideboard.apply {
+                                        this.toMutableDeckList().apply { this.remove(card) }
+                                    }
                                 )
                         }
                     }
@@ -131,13 +139,9 @@ class EditDeckViewModel(
             is EditDeckEvent.SaveDeck -> {
                 val deck = Deck(
                     id = state.value.deckId,
-                    name = state.value.name,
-                    mainDeck = state.value.mainDeckCardCountMap.flatMap {
-                        (key, count) -> List(count) { key }
-                    },
-                    sideboard = state.value.sideboardCardCountMap.flatMap {
-                        (key, count) -> List(count) { key }
-                    }
+                    name = state.value.deckName,
+                    mainDeck = state.value.mainDeck,
+                    sideboard = state.value.sideboard,
                 )
 
                 viewModelScope.launch {
@@ -173,8 +177,6 @@ class EditDeckViewModel(
             }
 
             is EditDeckEvent.EnteredDeckImportValue -> {
-                println("State: ${state.value.importDeckState.input}")
-                println("Input: ${event.input}")
                 _state.value = state.value.copy(
                     importDeckState = state.value.importDeckState.copy(
                         input = event.input
@@ -183,28 +185,6 @@ class EditDeckViewModel(
             }
 
             is EditDeckEvent.ImportDeck -> TODO()
-        }
-    }
-
-    private fun List<Card>.toCardCountMap(): MutableMap<Card, Int> {
-        return this.groupingBy { it }.eachCount().toMutableMap()
-    }
-
-    private fun MutableMap<Card, Int>.toList(): List<Card> {
-        return this.flatMap { (card, count) -> List(count) { card } }
-    }
-
-    private fun MutableMap<Card, Int>.addCard(card: Card): MutableMap<Card, Int> {
-        return this.toMutableMap().apply {
-            this[card] = (this[card] ?: 0) + 1
-        }
-    }
-
-    private fun MutableMap<Card, Int>.removeCard(card: Card): MutableMap<Card, Int> {
-        return this.toMutableMap().apply {
-            if (this[card] == 1) {
-                this.remove(card)
-            } else this[card] = this[card]!! - 1
         }
     }
 }
