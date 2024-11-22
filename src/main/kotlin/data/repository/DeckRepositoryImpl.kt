@@ -22,8 +22,7 @@ class DeckRepositoryImpl(
         )
 
     override suspend fun createDeck(name: String, mainDeck: DeckList, sideboard: DeckList): Long {
-        dao.createDeck(name)
-        val deckId = dao.getLastInsertedDeckId()
+        val deckId = dao.createDeck(name)
 
         dao.insertCardsIntoMainDeck(
             mainDeck.toCardsList().map { it.id }, deckId

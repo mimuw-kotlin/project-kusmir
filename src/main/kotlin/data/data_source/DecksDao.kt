@@ -6,8 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
 interface DecksDao {
-    suspend fun createDeck(name: String)
-    suspend fun getLastInsertedDeckId(): Long
+    suspend fun createDeck(name: String): Long
     suspend fun deleteDeckById(deckId: Long)
     suspend fun deleteDeckByName(name: String)
 

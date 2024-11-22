@@ -16,15 +16,12 @@ class DeckDaoImpl(
 
     private val queries = db.databaseQueries
 
-    override suspend fun createDeck(name: String) {
-        withContext(Dispatchers.IO) {
-            queries.insertDeck(name)
-        }
-    }
-
-    override suspend fun getLastInsertedDeckId(): Long {
+    override suspend fun createDeck(name: String): Long {
         return withContext(Dispatchers.IO) {
-            queries.getLastInsertedDeckId().executeAsOne()
+            queries.transactionWithResult {
+                queries.insertDeck(name)
+                queries.getLastInsertedDeckId().executeAsOne()
+            }
         }
     }
 

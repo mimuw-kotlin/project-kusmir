@@ -1,6 +1,5 @@
 package domain.repository
 
-import domain.model.Card
 import domain.model.Deck
 import domain.model.DeckList
 import kotlinx.coroutines.flow.Flow
