@@ -1,10 +1,17 @@
 package presentation.edit_deck
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddPhotoAlternate
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,6 +24,7 @@ import androidx.navigation.NavController
 import domain.model.Deck
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
+import presentation.common.components.CustomTooltip
 import presentation.common.components.DeckItem
 import presentation.edit_deck.components.AddCardMenu
 import presentation.edit_deck.components.CardItem
@@ -25,7 +33,7 @@ import presentation.edit_deck.components.ImportDeckPopup
 import presentation.edit_deck.util.groups
 import presentation.edit_deck.viewmodel.EditDeckViewModel
 
-@OptIn(KoinExperimentalAPI::class)
+@OptIn(KoinExperimentalAPI::class, ExperimentalFoundationApi::class)
 @Composable
 fun EditDeckScreen(
     navController: NavController,
@@ -182,31 +190,70 @@ fun EditDeckScreen(
 
                     Spacer(Modifier.weight(1f))
 
-                    Button(
-                        onClick = {
-                            viewModel.onEvent(EditDeckEvent.EnteredDeckName(editDeckState.deckName))
-                            viewModel.onEvent(EditDeckEvent.SaveDeck)
-                            navController.navigateUp()
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
+                    Row(modifier = Modifier.weight(0.3f)) {
+                        TooltipArea(
+                            tooltip = { CustomTooltip("Delete deck") },
+                            modifier = Modifier.weight(0.33f)
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    viewModel.onEvent(EditDeckEvent.DeleteDeck)
+                                    navController.navigateUp()
+                                },
+                                modifier = Modifier
+                                    .weight(0.33f)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Delete deck",
+                                    modifier = Modifier
+                                        .fillMaxSize(0.8f)
+                                )
+                            }
+                        }
 
-                    ) {
-                        Text("Save Deck")
-                    }
+                        TooltipArea(
+                            tooltip = { CustomTooltip("Save deck") },
+                            modifier = Modifier.weight(0.33f)
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    viewModel.onEvent(EditDeckEvent.EnteredDeckName(editDeckState.deckName))
+                                    viewModel.onEvent(EditDeckEvent.SaveDeck)
+                                    navController.navigateUp()
+                                },
 
-                    Button(
-                        onClick = {
-                            viewModel.onEvent(EditDeckEvent.DeleteDeck)
-                            navController.navigateUp()
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Save,
+                                    contentDescription = "Save deck",
+                                    modifier = Modifier
+                                        .fillMaxSize(0.8f)
+                                )
+                            }
+                        }
 
-                    ) {
-                        Text("Delete deck")
+                        TooltipArea(
+                            tooltip = { CustomTooltip("Choose deck image") },
+                            modifier = Modifier.weight(0.33f)
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    if (!chooseImageState.isVisible)
+                                        viewModel.onEvent(EditDeckEvent.ChooseImageEvent.ToggleChooseImagePopup)
+                                },
+                                modifier = Modifier
+                                    .weight(0.33f)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.AddPhotoAlternate,
+                                    contentDescription = "Choose deck image",
+                                    modifier = Modifier
+                                        .fillMaxSize(0.8f)
+                                )
+                            }
+                        }
+
                     }
 
                     Button(
@@ -220,19 +267,6 @@ fun EditDeckScreen(
 
                     ) {
                         Text("Import decklist")
-                    }
-
-                    Button(
-                        onClick = {
-                            if (!chooseImageState.isVisible)
-                                viewModel.onEvent(EditDeckEvent.ChooseImageEvent.ToggleChooseImagePopup)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-
-                    ) {
-                        Text("Change deck image")
                     }
                 }
 
