@@ -17,11 +17,12 @@ import androidx.navigation.NavController
 import domain.model.Deck
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
-import presentation.components.DeckItem
+import presentation.common.components.DeckItem
 import presentation.edit_deck.components.AddCardMenu
 import presentation.edit_deck.components.CardItem
 import presentation.edit_deck.components.ImportDeckPopup
 import presentation.edit_deck.util.groups
+import presentation.edit_deck.viewmodel.EditDeckViewModel
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
@@ -29,7 +30,11 @@ fun EditDeckScreen(
     navController: NavController,
     viewModel: EditDeckViewModel = koinViewModel(),
 ) {
-    val state by viewModel.state.collectAsState()
+    val editDeckState by viewModel.editDeckState.collectAsState()
+    val addCardMenuState by viewModel.addCardMenuState.collectAsState()
+    val chooseImageState by viewModel.chooseImageState.collectAsState()
+    val importDeckState by viewModel.importDeckState.collectAsState()
+
 
     Scaffold(
         content = {
@@ -59,10 +64,10 @@ fun EditDeckScreen(
                                     .padding(8.dp)
                                     .background(Color.Transparent)
                             ) {
-                                Text("Main Deck (${state.mainDeck.totalSize})", style = MaterialTheme.typography.h5)
+                                Text("Main Deck (${editDeckState.mainDeck.totalSize})", style = MaterialTheme.typography.h5)
                                 LazyColumn(
                                 ) {
-                                    for ((groupName, cards) in state.mainDeck.groups()) {
+                                    for ((groupName, cards) in editDeckState.mainDeck.groups()) {
                                         item {
                                             Spacer(Modifier.height(4.dp))
                                             Text(
@@ -108,7 +113,7 @@ fun EditDeckScreen(
                                 item {
                                     Text("Sideboard", style = MaterialTheme.typography.h5)
                                 }
-                                items(state.sideboard.toList()) { (card, count) ->
+                                items(editDeckState.sideboard.toList()) { (card, count) ->
                                     CardItem(
                                         count = count,
                                         cardName = card.name,
@@ -148,37 +153,37 @@ fun EditDeckScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     DeckItem(
-                        deckName = state.deckName,
+                        deckName = editDeckState.deckName,
                         onDeckNameChanged = { viewModel.onEvent(EditDeckEvent.EnteredDeckName(it)) },
-                        deckImageUrl = state.imageUrl,
+                        deckImageUrl = editDeckState.imageUrl,
                     )
 
                     Spacer(Modifier.height(8.dp))
 
                     AddCardMenu(
-                        isExpanded = state.addCardMenuState.isExpanded,
+                        isExpanded = addCardMenuState.isExpanded,
                         onExpand = {
-                            viewModel.onEvent(EditDeckEvent.ToggleAddCardMenu)
+                            viewModel.onEvent(EditDeckEvent.AddCardEvent.ToggleAddCardMenu)
                         },
-                        cardQueryText = state.addCardMenuState.searchBoxState.query,
-                        cardQueryResults = state.addCardMenuState.searchBoxState.results,
+                        cardQueryText = addCardMenuState.searchQuery,
+                        cardQueryResults = addCardMenuState.searchResults,
                         onCardSearch = {
-                            viewModel.onEvent(EditDeckEvent.CardSearch(it))
+                            viewModel.onEvent(EditDeckEvent.AddCardEvent.CardSearch(it))
                         },
                         onCardSelected = {
                             viewModel.onEvent(EditDeckEvent.AddCard(it))
                         },
                         onDeckTypeSelected = {
-                            viewModel.onEvent(EditDeckEvent.SelectTargetDeckListType(it))
+                            viewModel.onEvent(EditDeckEvent.AddCardEvent.SelectTargetDeckListType(it))
                         },
-                        selectedDeckListTypeId = state.addCardMenuState.selectedDeckTypeId
+                        selectedDeckListTypeId = addCardMenuState.selectedDeckTypeId
                     )
 
                     Spacer(Modifier.weight(1f))
 
                     Button(
                         onClick = {
-                            viewModel.onEvent(EditDeckEvent.EnteredDeckName(state.deckName))
+                            viewModel.onEvent(EditDeckEvent.EnteredDeckName(editDeckState.deckName))
                             viewModel.onEvent(EditDeckEvent.SaveDeck)
                             navController.navigateUp()
                         },
@@ -205,8 +210,8 @@ fun EditDeckScreen(
 
                     Button(
                         onClick = {
-                            if (!state.importDeckState.isVisible)
-                                viewModel.onEvent(EditDeckEvent.ToggleImportPopup)
+                            if (!importDeckState.isVisible)
+                                viewModel.onEvent(EditDeckEvent.ImportDeckEvent.ToggleImportPopup)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -219,13 +224,13 @@ fun EditDeckScreen(
             }
 
             ImportDeckPopup(
-                isVisible = state.importDeckState.isVisible,
-                input = state.importDeckState.input,
-                onClickOutside = { viewModel.onEvent(EditDeckEvent.ToggleImportPopup) },
+                isVisible = importDeckState.isVisible,
+                input = importDeckState.input,
+                onClickOutside = { viewModel.onEvent(EditDeckEvent.ImportDeckEvent.ToggleImportPopup) },
                 onValueChange = {
-                    viewModel.onEvent(EditDeckEvent.EnteredDeckImportValue(it))
+                    viewModel.onEvent(EditDeckEvent.ImportDeckEvent.EnteredDeckImportValue(it))
                 },
-                onSubmit = { viewModel.onEvent(EditDeckEvent.ImportDeck) },
+                onSubmit = { viewModel.onEvent(EditDeckEvent.ImportDeckEvent.ImportDeck) },
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
                     .fillMaxHeight(0.8f)

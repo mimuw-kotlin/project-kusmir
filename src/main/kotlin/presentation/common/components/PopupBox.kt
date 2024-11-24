@@ -1,4 +1,4 @@
-package presentation.components
+package presentation.common.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable

@@ -18,7 +18,7 @@ import androidx.navigation.NavController
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import presentation.Screen
-import presentation.components.DeckItem
+import presentation.common.components.DeckItem
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable

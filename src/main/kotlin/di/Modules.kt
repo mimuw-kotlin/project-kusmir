@@ -17,7 +17,7 @@ import data.network.ScryfallApiImpl
 import org.koin.compose.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
-import presentation.edit_deck.EditDeckViewModel
+import presentation.edit_deck.viewmodel.EditDeckViewModel
 import data.repository.DeckRepositoryImpl
 import domain.repository.DecksRepository
 import domain.use_cases.deck.DecksUseCases

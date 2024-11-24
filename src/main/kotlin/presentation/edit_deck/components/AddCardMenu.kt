@@ -18,12 +18,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import presentation.components.SearchBar
-import presentation.edit_deck.EditDeckEvent
+import presentation.common.components.SearchBar
 
 const val ANIMATION_DURATION = 300
 
