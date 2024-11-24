@@ -20,6 +20,7 @@ import org.koin.core.annotation.KoinExperimentalAPI
 import presentation.common.components.DeckItem
 import presentation.edit_deck.components.AddCardMenu
 import presentation.edit_deck.components.CardItem
+import presentation.edit_deck.components.ChooseImagePopup
 import presentation.edit_deck.components.ImportDeckPopup
 import presentation.edit_deck.util.groups
 import presentation.edit_deck.viewmodel.EditDeckViewModel
@@ -220,7 +221,21 @@ fun EditDeckScreen(
                     ) {
                         Text("Import decklist")
                     }
+
+                    Button(
+                        onClick = {
+                            if (!chooseImageState.isVisible)
+                                viewModel.onEvent(EditDeckEvent.ChooseImageEvent.ToggleChooseImagePopup)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+
+                    ) {
+                        Text("Change deck image")
+                    }
                 }
+
             }
 
             ImportDeckPopup(
@@ -231,6 +246,25 @@ fun EditDeckScreen(
                     viewModel.onEvent(EditDeckEvent.ImportDeckEvent.EnteredDeckImportValue(it))
                 },
                 onSubmit = { viewModel.onEvent(EditDeckEvent.ImportDeckEvent.ImportDeck) },
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .fillMaxHeight(0.8f)
+            )
+
+            ChooseImagePopup(
+                isVisible = chooseImageState.isVisible,
+                query = chooseImageState.searchQuery,
+                results = chooseImageState.searchResults,
+                onClickOutside = {
+                    viewModel.onEvent(EditDeckEvent.ChooseImageEvent.ToggleChooseImagePopup)
+                },
+                onSearch = {
+                    viewModel.onEvent(EditDeckEvent.ChooseImageEvent.ImageSearch(it))
+                },
+                onSubmit = {
+                    viewModel.onEvent(EditDeckEvent.ChangeDeckImage(it))
+                    viewModel.onEvent(EditDeckEvent.ChooseImageEvent.ToggleChooseImagePopup)
+                },
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
                     .fillMaxHeight(0.8f)

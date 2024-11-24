@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS 'cardDb'(
 
 CREATE TABLE IF NOT EXISTS 'deckDb' (
     'id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    'name' TEXT NOT NULL UNIQUE
+    'name' TEXT NOT NULL UNIQUE,
+    'imageSource' TEXT
 );
 
 CREATE TABLE IF NOT EXISTS 'card_deck' (
@@ -99,7 +100,8 @@ INSERT OR REPLACE INTO 'cardDb' (
 
 ---DECK QUERIES
 insertDeck:
-INSERT INTO 'deckDb' (name) VALUES (:name);
+INSERT INTO 'deckDb' (name, imageSource)
+VALUES (:name, :imageSource);
 
 insertCardIntoDeck:
 INSERT INTO card_deck (cardId, deckId, type)
@@ -130,6 +132,11 @@ WHERE cardId = :cardId AND deckId = :deckId AND type = :type;
 updateDeckName:
 UPDATE deckDb
 SET name = :name
+WHERE id = :deckId;
+
+updateDeckImage:
+UPDATE deckDb
+SET imageSource = :imageSource
 WHERE id = :deckId;
 
 getDecksContainingCard:

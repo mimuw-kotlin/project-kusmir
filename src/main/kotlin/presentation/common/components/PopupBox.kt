@@ -36,7 +36,7 @@ fun PopupBox(
            Popup(
                alignment = Alignment.Center,
                onDismissRequest = { onClickOutside() },
-               properties = PopupProperties(focusable = true)
+               properties = PopupProperties(focusable = true),
            ) {
                Box(
                    modifier

@@ -19,7 +19,7 @@ import coil3.compose.AsyncImage
 @Composable
 fun DeckItem (
     deckName: String,
-    deckImageUrl: String,
+    deckImageUrl: String?,
     onDeckNameChanged: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -27,8 +27,10 @@ fun DeckItem (
         modifier = modifier
     ) {
 
+        //TODO: Change placeholder image
+        val imageSource = deckImageUrl ?: "resources/img/MausoleumWanderer.jpg"
         AsyncImage(
-            model = deckImageUrl,
+            model = imageSource,
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()

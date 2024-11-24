@@ -8,6 +8,7 @@ sealed class EditDeckEvent {
     data object SaveDeck: EditDeckEvent()
     data object DeleteDeck: EditDeckEvent()
     data class EnteredDeckName(val name: String): EditDeckEvent()
+    data class ChangeDeckImage(val cardName: String): EditDeckEvent()
 
     sealed class AddCardEvent {
         data class CardSearch(val query: String): AddCardEvent()
@@ -19,5 +20,10 @@ sealed class EditDeckEvent {
         data object ToggleImportPopup: ImportDeckEvent()
         data class EnteredDeckImportValue(val input: String): ImportDeckEvent()
         data object ImportDeck: ImportDeckEvent()
+    }
+
+    sealed class ChooseImageEvent {
+        data class ImageSearch(val query: String): ChooseImageEvent()
+        data object ToggleChooseImagePopup: ChooseImageEvent()
     }
 }

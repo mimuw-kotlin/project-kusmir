@@ -6,7 +6,7 @@ import domain.model.DeckList
 data class EditDeckState(
     val deckId: Long = -1,
     val deckName: String = "",
-    val imageUrl: String = "",
+    val imageUrl: String? = null,
     val mainDeck: DeckList = DeckList(),
     val sideboard: DeckList = DeckList()
 ) {

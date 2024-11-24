@@ -16,12 +16,15 @@ class DeckRepositoryImpl(
         Deck(
             id = this.id,
             name = this.name,
+            imageSource = this.imageSource,
             mainDeck = DeckList(dao.getCardsFromMainDeck(this.id).map { it.toDomain() }),
             sideboard = DeckList(dao.getCardsFromSideboard(this.id).map { it.toDomain() })
         )
 
-    override suspend fun createDeck(name: String, mainDeck: DeckList, sideboard: DeckList): Long {
+    override suspend fun createDeck(name: String, imageSource: String?, mainDeck: DeckList, sideboard: DeckList): Long {
         val deckId = dao.createDeck(name)
+
+        dao.updateDeckImage(deckId, imageSource)
 
         dao.insertCardsIntoMainDeck(
             mainDeck.toCardsList().map { it.id }, deckId
@@ -42,6 +45,7 @@ class DeckRepositoryImpl(
 
     override suspend fun saveDeck(deck: Deck) {
         dao.updateDeckName(deck.id, deck.name)
+        dao.updateDeckImage(deck.id, deck.imageSource)
 
         dao.deleteAllCardsFromDeck(deck.id)
 
@@ -55,7 +59,9 @@ class DeckRepositoryImpl(
     }
 
     override suspend fun fetchDeckById(id: Long): Deck? =
-        dao.getDeckById(id)?.toDomain()
+        dao.getDeckById(id)?.toDomain().also {
+            println(it?.imageSource)
+        }
 
     override fun fetchAllDecks(): Flow<List<Deck>> =
         dao.getAllDecks().map { decksList ->

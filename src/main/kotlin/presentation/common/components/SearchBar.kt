@@ -74,37 +74,37 @@ fun SearchBar(
                     }
                 }
         )
-    }
 
-    if (query.isNotBlank() && results.isNotEmpty()) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-        ) {
-            items(results.indices.toList()) { index ->
-                val result = results[index]
-                val isHovered by interactionSource.collectIsHoveredAsState()
+        if (query.isNotBlank() && results.isNotEmpty()) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                items(results.indices.toList()) { index ->
+                    val result = results[index]
+                    val isHovered by interactionSource.collectIsHoveredAsState()
 
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .hoverable(interactionSource)
-                        .background(
-                            if (isHovered) Color.LightGray else Color.White,
-                            RoundedCornerShape(4.dp)
-                        )
-                        .clickable {
-                            if(isHovered) { onItemSelected(result) }
-                        }
-                ) {
-                    Text(
-                        text = result,
-                        color = if (isHovered) Color.Black else Color.DarkGray,
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
-                    )
+                            .hoverable(interactionSource)
+                            .background(
+                                if (isHovered) Color.LightGray else Color.White,
+                                RoundedCornerShape(4.dp)
+                            )
+                            .clickable {
+                                if(isHovered) { onItemSelected(result) }
+                            }
+                    ) {
+                        Text(
+                            text = result,
+                            color = if (isHovered) Color.Black else Color.DarkGray,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        )
+                    }
                 }
             }
         }

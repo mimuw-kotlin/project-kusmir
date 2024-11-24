@@ -19,7 +19,7 @@ class DeckDaoImpl(
     override suspend fun createDeck(name: String): Long {
         return withContext(Dispatchers.IO) {
             queries.transactionWithResult {
-                queries.insertDeck(name)
+                queries.insertDeck(name, null)
                 queries.getLastInsertedDeckId().executeAsOne()
             }
         }
@@ -138,5 +138,13 @@ class DeckDaoImpl(
         withContext(Dispatchers.IO) {
             queries.updateDeckName(deckId = deckId, name = name)
         }
+    }
+
+    override suspend fun updateDeckImage(deckId: Long, imageSource: String?) {
+        println("inserting: $imageSource")
+        withContext(Dispatchers.IO) {
+            queries.updateDeckImage(deckId = deckId, imageSource = imageSource)
+        }
+
     }
 }

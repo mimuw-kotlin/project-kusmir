@@ -8,7 +8,7 @@ class SaveDeckUseCase(
 ) {
     suspend operator fun invoke(deck: Deck): Long {
         if (deck.id == -1L) {
-            return repository.createDeck(deck.name, deck.mainDeck, deck.sideboard)
+            return repository.createDeck(deck.name, deck.imageSource, deck.mainDeck, deck.sideboard)
         } else {
             repository.saveDeck(deck)
             return deck.id

@@ -42,7 +42,7 @@ class EditDeckViewModel(
             deckUseCases.getDeck(deckId)?.also { deck ->
                 _editDeckState.value = editDeckState.value.copy(
                     deckName = deck.name,
-                    imageUrl = "https://cards.scryfall.io/normal/front/5/6/56ebc372-aabd-4174-a943-c7bf59e5028d.jpg?1562629953",
+                    imageUrl = deck.imageSource,
                     mainDeck = deck.mainDeck,
                     sideboard = deck.sideboard,
                 )
@@ -117,9 +117,12 @@ class EditDeckViewModel(
                 val deck = Deck(
                     id = editDeckState.value.deckId,
                     name = editDeckState.value.deckName,
+                    imageSource = editDeckState.value.imageUrl,
                     mainDeck = editDeckState.value.mainDeck,
                     sideboard = editDeckState.value.sideboard,
                 )
+
+                println(deck.imageSource)
 
                 viewModelScope.launch {
                     val id = deckUseCases.saveDeck(deck)
@@ -140,7 +143,14 @@ class EditDeckViewModel(
                 println("name: ${editDeckState.value.deckName}")
             }
 
-
+            is EditDeckEvent.ChangeDeckImage -> {
+                viewModelScope.launch {
+                    val card = cardsUseCases.getCardByName(event.cardName)
+                    _editDeckState.value = editDeckState.value.copy(
+                        imageUrl = card!!.imageSource
+                    )
+                }
+            }
         }
     }
 
@@ -204,6 +214,26 @@ class EditDeckViewModel(
                         println(e.message) // TODO: error popup
                     }
                 }
+            }
+        }
+    }
+
+    fun onEvent(event: EditDeckEvent.ChooseImageEvent) {
+        when (event) {
+            is EditDeckEvent.ChooseImageEvent.ImageSearch -> {
+                _chooseImageState.value = chooseImageState.value.copy(
+                    searchQuery = event.query
+                )
+                viewModelScope.launch {
+                    _chooseImageState.value = chooseImageState.value.copy(
+                        searchResults = cardsUseCases.getSearchResults(event.query)
+                    )
+                }
+            }
+            EditDeckEvent.ChooseImageEvent.ToggleChooseImagePopup -> {
+                _chooseImageState.value = chooseImageState.value.copy(
+                    isVisible = !chooseImageState.value.isVisible
+                )
             }
         }
     }
