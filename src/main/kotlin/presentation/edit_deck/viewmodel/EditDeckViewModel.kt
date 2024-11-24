@@ -1,5 +1,7 @@
 package presentation.edit_deck.viewmodel
 
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import domain.model.Deck
@@ -29,6 +31,9 @@ class EditDeckViewModel(
 
     private val _importDeckState = MutableStateFlow(EditDeckState.ImportDeckState())
     val importDeckState: StateFlow<EditDeckState.ImportDeckState> = _importDeckState
+
+    private val _cardsImagesMap: SnapshotStateMap<String, String> = mutableStateMapOf()
+    val cardsImagesMap: Map<String, String> = _cardsImagesMap
 
     init {
         viewModelScope.launch {

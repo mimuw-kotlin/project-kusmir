@@ -92,6 +92,7 @@ fun EditDeckScreen(
                                             CardItem(
                                                 count = count,
                                                 cardName = card.name,
+                                                cardImageUrl = card.imageSource,
                                                 onAdd = {
                                                     viewModel.onEvent(EditDeckEvent.AddCard(it, Deck.ListType.MainDeck))
                                                 },
@@ -126,6 +127,7 @@ fun EditDeckScreen(
                                     CardItem(
                                         count = count,
                                         cardName = card.name,
+                                        cardImageUrl = card.imageSource,
                                         onAdd = {
                                             viewModel.onEvent(
                                                 EditDeckEvent.AddCard(
