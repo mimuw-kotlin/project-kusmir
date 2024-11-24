@@ -15,7 +15,8 @@ interface CardsDao {
         colors: List<String>?,
         legalities: Map<String, Boolean>,
         type: String,
-        imageSource: String
+        imageSource: String,
+        cropImageSource: String,
     )
     suspend fun insert(card: CardDb)
     suspend fun insertMultiple(cards: List<CardDb>)

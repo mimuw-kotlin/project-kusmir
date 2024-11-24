@@ -9,6 +9,7 @@ data class Card (
     val legalities: Map<MtgFormat, Boolean>,
     val type: String,
     val imageSource: String,
+    val cropImageSource: String,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -47,7 +47,7 @@ fun DecksScreen(
             items(state.value.decks) { deck ->
                 DeckItem(
                     deckName = deck.name,
-                    deckImageUrl = "https://cards.scryfall.io/normal/front/5/6/56ebc372-aabd-4174-a943-c7bf59e5028d.jpg?1562629953",
+                    deckImageUrl = deck.imageSource,
                     onDeckNameChanged = {},
                     modifier = Modifier
                         .clickable(

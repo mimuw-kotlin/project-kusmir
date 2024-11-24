@@ -48,7 +48,8 @@ class CardsDaoImpl(
         colors: List<String>?,
         legalities: Map<String, Boolean>,
         type: String,
-        imageSource: String
+        imageSource: String,
+        cropImageSource: String,
     ) {
         withContext(Dispatchers.IO) {
             queries.insertCard(
@@ -57,7 +58,8 @@ class CardsDaoImpl(
                 colors,
                 legalities,
                 type,
-                imageSource
+                imageSource,
+                cropImageSource,
             )
         }
     }
@@ -71,7 +73,8 @@ class CardsDaoImpl(
                     colors,
                     legalities,
                     type,
-                    imageSource
+                    imageSource,
+                    cropImageSource,
                 )
             }
         }
@@ -87,7 +90,8 @@ class CardsDaoImpl(
                         card.colors,
                         card.legalities,
                         card.type,
-                        card.imageSource
+                        card.imageSource,
+                        card.cropImageSource,
                     )
                 }
             }

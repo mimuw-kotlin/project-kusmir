@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS 'cardDb'(
     'colors' TEXT AS List<kotlin.String>,
     'legalities' TEXT AS Map<kotlin.String, kotlin.Boolean> NOT NULL,
     'type' TEXT NOT NULL,
-    'imageSource' TEXT NOT NULL
+    'imageSource' TEXT NOT NULL,
+    'cropImageSource' TEXT NOT NULL
 );
 
 
@@ -88,14 +89,16 @@ INSERT OR REPLACE INTO 'cardDb' (
     'colors',
     'legalities',
     'type',
-    'imageSource'
+    'imageSource',
+    'cropImageSource'
 ) VALUES (
     :id,
     :name,
     :colors,
     :legalities,
     :type,
-    :imageSource
+    :imageSource,
+    :cropImageSource
 );
 
 ---DECK QUERIES

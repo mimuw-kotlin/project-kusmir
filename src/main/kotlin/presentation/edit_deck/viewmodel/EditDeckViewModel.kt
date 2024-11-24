@@ -147,7 +147,7 @@ class EditDeckViewModel(
                 viewModelScope.launch {
                     val card = cardsUseCases.getCardByName(event.cardName)
                     _editDeckState.value = editDeckState.value.copy(
-                        imageUrl = card!!.imageSource
+                        imageUrl = card!!.cropImageSource
                     )
                 }
             }

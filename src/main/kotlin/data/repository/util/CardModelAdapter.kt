@@ -16,7 +16,8 @@ fun CardDb.toDomain(): Card {
         legalities = legalities
             .mapKeys { (key, _) -> parseMtgFormatString(key) },
         type = type,
-        imageSource = imageSource
+        imageSource = imageSource,
+        cropImageSource = cropImageSource,
     )
 }
 
@@ -43,19 +44,20 @@ fun JsonObject.toDatabase(): CardDb {
     val type = get("type_line").asString
 
     val layout = get("layout").asString
-    val imageSource = if (layout.equals("transform")
+    val imageUris = if (layout.equals("transform")
         || layout.equals("modal_dfc") || layout.equals("reversible_card")
         || layout.equals("art_series") || layout.equals("double_faced_token")) {
             this.get("card_faces").asJsonArray
             .get(0).asJsonObject // we're interested in front face only.
             .get("image_uris").asJsonObject
-            .get("png").asString
     } else {
             this.get("image_uris").asJsonObject
-            .get("png").asString
     }
 
-    return CardDb(id, name, colorIdentity, legalities, type, imageSource)
+    val imageSource = imageUris.get("png").asString
+    val cropImageSource = imageUris.get("art_crop").asString
+
+    return CardDb(id, name, colorIdentity, legalities, type, imageSource, cropImageSource)
 }
 
 private fun parseColor(colorStr: String): MtgColor {
