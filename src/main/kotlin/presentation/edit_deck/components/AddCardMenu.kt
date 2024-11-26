@@ -18,6 +18,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -82,6 +84,7 @@ fun AddCardMenu(
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .height(32.dp)
+                .pointerHoverIcon(PointerIcon.Hand)
                 .clickable {
                     onExpand()
                 }

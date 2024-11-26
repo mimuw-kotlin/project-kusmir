@@ -25,6 +25,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -85,6 +87,7 @@ fun RowSwitch(
                         modifier = Modifier
                             .width(tabWidth)
                             .fillMaxHeight()
+                            .pointerHoverIcon(PointerIcon.Hand)
                             .clickable(
                                 interactionSource = remember {
                                     MutableInteractionSource()

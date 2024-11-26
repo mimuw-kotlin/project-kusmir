@@ -13,12 +13,24 @@ import presentation.decks.DecksScreen
 import presentation.edit_deck.EditDeckScreen
 
 sealed class Screen {
+    abstract val name: String
+
     @Serializable
-    object Home
+    data object Home : Screen() {
+        override val name = "Home"
+    }
     @Serializable
-    data class EditDeck(val deckId: Long = -1)
+    data class EditDeck(val deckId: Long = -1) : Screen() {
+        override val name = "Edit deck"
+    }
     @Serializable
-    object Decks
+    data object Decks : Screen() {
+        override val name = "Decks"
+    }
+    @Serializable
+    data object Statistics : Screen() {
+        override val name = "Statistics"
+    }
 }
 
 @OptIn(KoinExperimentalAPI::class)
@@ -29,6 +41,9 @@ fun MainApp() {
         navController = navController,
         startDestination = Screen.Decks
     ) {
+        composable<Screen.Home> {
+
+        }
         composable<Screen.Decks> {
            DecksScreen(
                navController = navController,

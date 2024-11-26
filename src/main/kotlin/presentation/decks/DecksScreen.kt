@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import presentation.Screen
+import presentation.common.components.CustomTopBar
 import presentation.common.components.DeckItem
 
 @OptIn(KoinExperimentalAPI::class)
@@ -38,6 +39,13 @@ fun DecksScreen(
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add new deck")
             }
+        },
+        topBar = {
+            CustomTopBar(
+                onBackPressed = {},
+                onNavigate = {screen -> navController.navigate(screen) },
+                currentScreen = Screen.Decks
+            )
         }
     ) {
         LazyVerticalGrid(
@@ -56,7 +64,6 @@ fun DecksScreen(
                             },
                             indication = null,
                             onClick = {
-                                println(deck.id)
                                 navController.navigate(Screen.EditDeck(deck.id))
                             }
                         )

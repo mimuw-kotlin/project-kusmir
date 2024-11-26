@@ -23,9 +23,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -69,42 +72,50 @@ fun CardItem (
                 text = cardName,
                 style = TextStyle(
                     fontSize = 16.sp
-                )
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .pointerHoverIcon(PointerIcon.Hand),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
-        val onAddInteractionSource = remember { MutableInteractionSource() }
-        Icon(
-            Icons.Default.Add,
-            contentDescription = "Add a card",
-            tint = lerp(Color.Green, Color.Black, 0.2f),
-            modifier = Modifier
-                .width(24.dp)
-                .clickable(
-                    interactionSource = onAddInteractionSource,
-                    indication = ripple(
-                        radius = 12.dp
-                    ),
-                ) { onAdd(cardName) }
-        )
+        Row {
+            val onAddInteractionSource = remember { MutableInteractionSource() }
+            Icon(
+                Icons.Default.Add,
+                contentDescription = "Add a card",
+                tint = lerp(Color.Green, Color.Black, 0.2f),
+                modifier = Modifier
+                    .width(24.dp)
+                    .pointerHoverIcon(PointerIcon.Hand)
+                    .clickable(
+                        interactionSource = onAddInteractionSource,
+                        indication = ripple(
+                            radius = 12.dp
+                        ),
+                    ) { onAdd(cardName) }
+            )
 
-        val onRemoveInteractionSource = remember { MutableInteractionSource() }
-        Icon(
-            Icons.Default.Remove,
-            contentDescription = "Remove a card",
-            tint = lerp(Color.Red, Color.Black, 0.2f),
-            modifier = Modifier
-                .width(24.dp)
-                .clickable(
-                    interactionSource = onRemoveInteractionSource,
-                    indication = ripple(
-                        radius = 12.dp
-                    ),
-                ) { onRemove(cardName) }
-        )
-
+            val onRemoveInteractionSource = remember { MutableInteractionSource() }
+            Icon(
+                Icons.Default.Remove,
+                contentDescription = "Remove a card",
+                tint = lerp(Color.Red, Color.Black, 0.2f),
+                modifier = Modifier
+                    .width(24.dp)
+                    .pointerHoverIcon(PointerIcon.Hand)
+                    .clickable(
+                        interactionSource = onRemoveInteractionSource,
+                        indication = ripple(
+                            radius = 12.dp
+                        ),
+                    ) { onRemove(cardName) }
+            )
+        }
     }
 }
 
