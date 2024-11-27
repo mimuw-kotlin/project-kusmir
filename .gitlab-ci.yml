@@ -5,6 +5,7 @@ stages:
   - test
 
 before_script:
+  - chmod +x ./gradlew
   - export GRADLE_USER_HOIME=`pwd`/.gradle
 
 cache:
