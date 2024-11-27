@@ -32,3 +32,8 @@ code_style:
   script:
     - ./gradlew ktlintCheck
   allow_failure: true
+  artifacts:
+    when: on_failure
+    paths:
+      - build/reports/ktlint/*/*.txt
+
