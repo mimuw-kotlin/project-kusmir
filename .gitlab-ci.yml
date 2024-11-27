@@ -1,7 +1,7 @@
 image: gradle:8.7-jdk17
 
 stages:
-  - compile
+  - build
   - test
 
 before_script:
