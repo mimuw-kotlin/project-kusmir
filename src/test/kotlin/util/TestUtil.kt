@@ -30,6 +30,7 @@ internal fun mockCardDatabase(): Database {
     )
 }
 
+@OptIn(ExperimentalUuidApi::class)
 internal fun sampleCardDbList(): List<CardDb> = listOf(
     CardDb(
         id = Uuid.random(),
@@ -40,7 +41,8 @@ internal fun sampleCardDbList(): List<CardDb> = listOf(
             "pioneer" to true
         ),
         type = "Creature",
-        imageSource = "invalid/image/source"
+        imageSource = "invalid/image/source",
+        cropImageSource = "invalid/image/source",
     ),
     CardDb(
         id = Uuid.random(),
@@ -52,6 +54,7 @@ internal fun sampleCardDbList(): List<CardDb> = listOf(
             "pioneer" to true
         ),
         type = "Instant",
-        imageSource = "invalid/image/source"
+        imageSource = "invalid/image/source",
+        cropImageSource = "invalid/image/source",
     ),
 )

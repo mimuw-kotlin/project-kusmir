@@ -1,0 +1,33 @@
+image: gradle:8.7-jdk17
+
+stages:
+  - compile
+  - test
+
+before_script:
+  - export GRADLE_USER_HOIME=`pwd`/.gradle
+
+cache:
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+build:
+  stage: build
+  script:
+    - ./gradlew assemble
+
+test:
+  stage: test
+  script:
+    - ./gradlew test --stacktrace
+
+code_style:
+  stage: test
+  script:
+    - ./gradlew ktlint
+  artifacts:
+    paths:
+      - build/ktlint.xml
+    expire_in: 1 day
+  allow_failure: true
