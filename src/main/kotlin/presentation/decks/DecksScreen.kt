@@ -26,7 +26,7 @@ import presentation.common.components.DeckItem
 @Preview
 fun DecksScreen(
     navController: NavController,
-    viewModel: DecksViewModel = koinViewModel<DecksViewModel>()
+    viewModel: DecksViewModel = koinViewModel<DecksViewModel>(),
 ) {
     val state = viewModel.state
 
@@ -35,7 +35,7 @@ fun DecksScreen(
             FloatingActionButton(
                 onClick = {
                     navController.navigate(Screen.EditDeck())
-                }
+                },
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add new deck")
             }
@@ -43,30 +43,32 @@ fun DecksScreen(
         topBar = {
             CustomTopBar(
                 onBackPressed = {},
-                onNavigate = {screen -> navController.navigate(screen) },
-                currentScreen = Screen.Decks
+                onNavigate = { screen -> navController.navigate(screen) },
+                currentScreen = Screen.Decks,
             )
-        }
+        },
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            modifier = Modifier.width(1000.dp)
+            modifier = Modifier.width(1000.dp),
         ) {
             items(state.value.decks) { deck ->
                 DeckItem(
                     deckName = deck.name,
                     deckImageUrl = deck.imageSource,
                     onDeckNameChanged = {},
-                    modifier = Modifier
-                        .clickable(
-                            interactionSource = remember {
-                                MutableInteractionSource()
-                            },
-                            indication = null,
-                            onClick = {
-                                navController.navigate(Screen.EditDeck(deck.id))
-                            }
-                        )
+                    modifier =
+                        Modifier
+                            .clickable(
+                                interactionSource =
+                                    remember {
+                                        MutableInteractionSource()
+                                    },
+                                indication = null,
+                                onClick = {
+                                    navController.navigate(Screen.EditDeck(deck.id))
+                                },
+                            ),
                 )
             }
         }
@@ -74,7 +76,7 @@ fun DecksScreen(
         Button(
             onClick = {
                 viewModel.fetchAndUpdateCards()
-            }
+            },
         ) {
             Text("UPDATE")
         }

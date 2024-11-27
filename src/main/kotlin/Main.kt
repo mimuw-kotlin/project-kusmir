@@ -16,16 +16,17 @@ fun App() {
     }
 }
 
-fun main() = runBlocking {
-    initKoin()
+fun main() =
+    runBlocking {
+        initKoin()
 
-    application {
-        Window(
-            onCloseRequest = ::exitApplication,
-            title = "mtgo-tracker"
-        ) {
-            window.minimumSize = Dimension(960, 540)
-            App()
+        application {
+            Window(
+                onCloseRequest = ::exitApplication,
+                title = "mtgo-tracker",
+            ) {
+                window.minimumSize = Dimension(960, 540)
+                App()
+            }
         }
     }
-}

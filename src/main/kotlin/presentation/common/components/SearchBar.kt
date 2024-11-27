@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
@@ -41,7 +40,7 @@ fun SearchBar(
     textStyle: TextStyle = TextStyle(),
     singleLine: Boolean = true,
     onFocusChange: (FocusState) -> Unit = {},
-    onItemSelected: (String) -> Unit = {}
+    onItemSelected: (String) -> Unit = {},
 ) {
     var hoveredItemIndex by remember { mutableStateOf(-1) }
     val highlightedItemIndex = if (hoveredItemIndex == -1) 0 else hoveredItemIndex
@@ -56,53 +55,58 @@ fun SearchBar(
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
-                    contentDescription = "Search Icon"
+                    contentDescription = "Search Icon",
                 )
             },
             placeholder = placeholder,
             textStyle = textStyle,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .onFocusChanged { onFocusChange(it) }
-                .onKeyEvent {
-                    if (results.isNotEmpty() && it.key == Key.Enter) {
-                        onItemSelected(results[highlightedItemIndex])
-                        true
-                    } else {
-                        false
-                    }
-                }
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .onFocusChanged { onFocusChange(it) }
+                    .onKeyEvent {
+                        if (results.isNotEmpty() && it.key == Key.Enter) {
+                            onItemSelected(results[highlightedItemIndex])
+                            true
+                        } else {
+                            false
+                        }
+                    },
         )
 
         if (query.isNotBlank() && results.isNotEmpty()) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
             ) {
                 items(results.indices.toList()) { index ->
                     val result = results[index]
                     val isHovered by interactionSource.collectIsHoveredAsState()
 
                     Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .hoverable(interactionSource)
-                            .background(
-                                if (isHovered) Color.LightGray else Color.White,
-                                RoundedCornerShape(4.dp)
-                            )
-                            .clickable {
-                                if(isHovered) { onItemSelected(result) }
-                            }
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .hoverable(interactionSource)
+                                .background(
+                                    if (isHovered) Color.LightGray else Color.White,
+                                    RoundedCornerShape(4.dp),
+                                ).clickable {
+                                    if (isHovered) {
+                                        onItemSelected(result)
+                                    }
+                                },
                     ) {
                         Text(
                             text = result,
                             color = if (isHovered) Color.Black else Color.DarkGray,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
                         )
                     }
                 }

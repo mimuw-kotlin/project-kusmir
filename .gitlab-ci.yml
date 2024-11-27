@@ -21,13 +21,13 @@ test:
   stage: test
   script:
     - ./gradlew test --stacktrace
+  artifacts:
+    when: always
+    reports:
+      junit: build/test-results/test/TEST-*.xml
 
 code_style:
   stage: test
   script:
-    - ./gradlew ktlint
-  artifacts:
-    paths:
-      - build/ktlint.xml
-    expire_in: 1 day
+    - ./gradlew ktlintCheck
   allow_failure: true

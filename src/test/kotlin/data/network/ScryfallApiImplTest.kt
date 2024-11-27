@@ -2,8 +2,6 @@ package data.network
 
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-
-import org.junit.jupiter.api.Assertions.*
 import kotlin.test.BeforeTest
 
 class ScryfallApiImplTest {
@@ -19,8 +17,9 @@ class ScryfallApiImplTest {
     }
 
     @Test
-    fun fetchCardByName() = runTest{
-    }
+    fun fetchCardByName() =
+        runTest {
+        }
 
     @Test
     fun fetchBulkData() {

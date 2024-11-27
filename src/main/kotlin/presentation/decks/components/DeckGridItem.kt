@@ -6,7 +6,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.runtime.Composable
@@ -17,24 +16,24 @@ import androidx.compose.ui.unit.dp
 import domain.model.Deck
 
 @Composable
-fun DeckGridItem(
-    deck: Deck
-) {
+fun DeckGridItem(deck: Deck) {
     Box(
-        modifier = Modifier
-            .padding(16.dp)
-            .width(10.dp)
+        modifier =
+            Modifier
+                .padding(16.dp)
+                .width(10.dp),
     ) {
-        Column (
-            horizontalAlignment = Alignment.CenterHorizontally
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row {
                 Box(
-                    modifier = Modifier
-                        .background(Color.Gray)
-                        .height(120.dp)
-                        .width(240.dp),
-                    contentAlignment = Alignment.Center
+                    modifier =
+                        Modifier
+                            .background(Color.Gray)
+                            .height(120.dp)
+                            .width(240.dp),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text("Hopefully an image soon")
                 }
@@ -43,7 +42,7 @@ fun DeckGridItem(
                         Icon(
                             imageVector = Icons.Rounded.Delete,
                             contentDescription = null,
-                            tint = Color.Red
+                            tint = Color.Red,
                         )
                     }
 
@@ -51,12 +50,11 @@ fun DeckGridItem(
                         Icon(
                             imageVector = Icons.Rounded.Edit,
                             tint = Color.Blue,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                     }
                 }
             }
         }
-
     }
 }

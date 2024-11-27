@@ -17,27 +17,27 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 
 @Composable
-fun DeckItem (
+fun DeckItem(
     deckName: String,
     deckImageUrl: String?,
     onDeckNameChanged: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = modifier
+        modifier = modifier,
     ) {
-
-        //TODO: Change placeholder image
+        // TODO: Change placeholder image
         val imageSource = deckImageUrl ?: "resources/img/MausoleumWanderer.jpg"
         AsyncImage(
             model = imageSource,
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(10f / 7)
-                .clip(RoundedCornerShape(16.dp))
-                .height(300.dp),
-            contentScale = ContentScale.Crop
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(10f / 7)
+                    .clip(RoundedCornerShape(16.dp))
+                    .height(300.dp),
+            contentScale = ContentScale.Crop,
         )
 
         BasicTextField(
@@ -45,19 +45,21 @@ fun DeckItem (
             onValueChange = { newText ->
                 onDeckNameChanged(newText)
             },
-            textStyle = TextStyle(
-                fontSize = 24.sp,
-                color = Color.White,
-                textAlign = TextAlign.Center
-            ),
+            textStyle =
+                TextStyle(
+                    fontSize = 24.sp,
+                    color = Color.White,
+                    textAlign = TextAlign.Center,
+                ),
             singleLine = true,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .offset(y = (8).dp)
-                .clip(RoundedCornerShape(16.dp))
-                .padding(8.dp)
-                .fillMaxWidth()
-                .background(Color.Black.copy(alpha = 0.8f))
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .offset(y = (8).dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .padding(8.dp)
+                    .fillMaxWidth()
+                    .background(Color.Black.copy(alpha = 0.8f)),
         )
     }
 }

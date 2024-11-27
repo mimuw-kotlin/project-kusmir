@@ -28,25 +28,26 @@ fun EditableTextField(
     onValueChange: (String) -> Unit = {},
     onFinishedEditing: (String) -> Unit = {},
     textStyle: TextStyle = TextStyle(),
-    onFocusChange: (FocusState) -> Unit = {}
+    onFocusChange: (FocusState) -> Unit = {},
 ) {
     var isEditing by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
 
     Row(
         modifier = modifier.padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
-            modifier = modifier
-                .weight(1f)
-                .height(30.dp)
-                .background(
-                    color = Color.Black.copy(alpha = 0.2f)
-                )
-                .border(
-                    BorderStroke(1.dp, if (isEditing) Color.Blue else Color.Transparent)
-                )
+            modifier =
+                modifier
+                    .weight(1f)
+                    .height(30.dp)
+                    .background(
+                        color = Color.Black.copy(alpha = 0.2f),
+                    )
+                    .border(
+                        BorderStroke(1.dp, if (isEditing) Color.Blue else Color.Transparent),
+                    ),
         ) {
             BasicTextField(
                 value = text,
@@ -56,13 +57,14 @@ fun EditableTextField(
                 },
                 singleLine = singleLine,
                 textStyle = textStyle,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .onFocusChanged {
-                        onFocusChange(it)
-                    },
-                enabled = isEditing
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .onFocusChanged {
+                            onFocusChange(it)
+                        },
+                enabled = isEditing,
             )
             if (isHintVisible) {
                 Text(text = hint, style = textStyle)
@@ -76,9 +78,8 @@ fun EditableTextField(
             Icon(
                 imageVector = if (isEditing) Icons.Filled.Done else Icons.Filled.Edit,
                 contentDescription = if (isEditing) "Done" else "Edit",
-                tint = (if (isEditing) Color.Green else Color.Blue).copy(alpha = 0.5f)
+                tint = (if (isEditing) Color.Green else Color.Blue).copy(alpha = 0.5f),
             )
         }
     }
 }
-

@@ -1,8 +1,10 @@
+@file:Suppress("ktlint:standard:no-wildcard-imports")
+
 package mock
 
 import data.network.ScryfallApi
-import io.ktor.client.statement.*
-import io.ktor.utils.io.*
+import io.ktor.client.statement.HttpResponse
+import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.runBlocking
 import java.io.File
 
@@ -14,8 +16,8 @@ import java.io.File
 // 2. OracleCardsFull.json - full bulk data from ScryfallApi
 
 class ScryfallApiMock(
-    val bulkFileName: String
-): ScryfallApi {
+    private val bulkFileName: String,
+) : ScryfallApi {
     override suspend fun fetchCardById(id: String): HttpResponse {
         TODO("Not yet implemented")
     }
@@ -29,15 +31,18 @@ class ScryfallApiMock(
     }
 
     override suspend fun getCardsChannel(type: String): ByteReadChannel {
-        val filePath = javaClass.classLoader.getResource(bulkFileName)
-            ?.path
-            ?: throw IllegalArgumentException("$bulkFileName not found")
+        val filePath =
+            javaClass.classLoader
+                .getResource(bulkFileName)
+                ?.path
+                ?: throw IllegalArgumentException("$bulkFileName not found")
 
         val file = File(filePath)
         return file.readChannel()
     }
 
-    private fun File.readChannel(): ByteReadChannel = runBlocking {
-        ByteReadChannel(this@readChannel.readBytes())
-    }
+    private fun File.readChannel(): ByteReadChannel =
+        runBlocking {
+            ByteReadChannel(this@readChannel.readBytes())
+        }
 }

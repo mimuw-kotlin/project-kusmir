@@ -5,14 +5,14 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -43,12 +43,13 @@ fun DefaultTextField(
                 interactionSource = interactionSource,
                 placeholder = { Text(placeholder) },
                 leadingIcon = leadingIcon,
-                contentPadding = PaddingValues(0.dp)
+                contentPadding = PaddingValues(0.dp),
             )
         },
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(0.dp)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(0.dp),
     )
 }
 
@@ -63,8 +64,8 @@ fun PreviewSearchTextField() {
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = "Search Icon"
+                contentDescription = "Search Icon",
             )
-        }
+        },
     )
 }

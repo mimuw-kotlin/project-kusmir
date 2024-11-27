@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
     kotlin("jvm") version "2.0.20"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
     id("org.jetbrains.compose") version "1.7.0-beta01"
     id("org.jetbrains.kotlin.plugin.compose")
     alias(libs.plugins.sqldelight)

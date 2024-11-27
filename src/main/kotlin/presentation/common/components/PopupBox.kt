@@ -22,33 +22,34 @@ fun PopupBox(
     visible: Boolean,
     content: @Composable () -> Unit,
     onClickOutside: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     if (visible) {
         val focusRequester = remember { FocusRequester() }
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Transparent)
-                .zIndex(10f),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Transparent)
+                    .zIndex(10f),
+            contentAlignment = Alignment.Center,
         ) {
-           Popup(
-               alignment = Alignment.Center,
-               onDismissRequest = { onClickOutside() },
-               properties = PopupProperties(focusable = true),
-           ) {
-               Box(
-                   modifier
-                       .background(Color.White)
-                       .clip(RoundedCornerShape(4.dp))
-                       .focusRequester(focusRequester)
-                       .focusable(),
-                   contentAlignment = Alignment.Center
-               ) {
-                   content()
-               }
-           }
+            Popup(
+                alignment = Alignment.Center,
+                onDismissRequest = { onClickOutside() },
+                properties = PopupProperties(focusable = true),
+            ) {
+                Box(
+                    modifier
+                        .background(Color.White)
+                        .clip(RoundedCornerShape(4.dp))
+                        .focusRequester(focusRequester)
+                        .focusable(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    content()
+                }
+            }
         }
     }
 }

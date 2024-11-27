@@ -28,18 +28,19 @@ import presentation.Screen
 fun CustomTopBar(
     onBackPressed: () -> Unit,
     onNavigate: (Screen) -> Unit,
-    currentScreen: Screen
+    currentScreen: Screen,
 ) {
     Row(
-        modifier = Modifier
-            .padding(bottom = 16.dp)
-            .background(MaterialTheme.colors.primarySurface)
+        modifier =
+            Modifier
+                .padding(bottom = 16.dp)
+                .background(MaterialTheme.colors.primarySurface),
     ) {
         IconButton(onClick = onBackPressed) {
             Icon(
                 Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
-                tint = MaterialTheme.colors.onPrimary
+                tint = MaterialTheme.colors.onPrimary,
             )
         }
 
@@ -55,8 +56,9 @@ fun NavigationButtons(
     currentScreen: Screen,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier =
+            Modifier
+                .fillMaxWidth(),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -65,20 +67,21 @@ fun NavigationButtons(
             val screen: Screen,
         )
 
-        val buttons = listOf(
-            NavTarget(
-                icon = Icons.Default.Home,
-                screen = Screen.Home,
-            ),
-            NavTarget(
-                icon = Icons.Default.Folder,
-                screen = Screen.Decks,
-            ),
-            NavTarget(
-                icon = Icons.Default.BarChart,
-                screen = Screen.Statistics,
-            ),
-        )
+        val buttons =
+            listOf(
+                NavTarget(
+                    icon = Icons.Default.Home,
+                    screen = Screen.Home,
+                ),
+                NavTarget(
+                    icon = Icons.Default.Folder,
+                    screen = Screen.Decks,
+                ),
+                NavTarget(
+                    icon = Icons.Default.BarChart,
+                    screen = Screen.Statistics,
+                ),
+            )
 
         buttons.forEach { (icon, screen) ->
             val title = screen.name
@@ -87,25 +90,28 @@ fun NavigationButtons(
             val isHovered by interactionSource.collectIsHoveredAsState()
 
             val contentColor by animateColorAsState(
-                targetValue = if (isSelected || isHovered) {
-                    MaterialTheme.colors.onPrimary
-                } else {
-                    MaterialTheme.colors.onPrimary.copy(alpha = 0.6f)
-                }
+                targetValue =
+                    if (isSelected || isHovered) {
+                        MaterialTheme.colors.onPrimary
+                    } else {
+                        MaterialTheme.colors.onPrimary.copy(alpha = 0.6f)
+                    },
             )
 
             Button(
                 onClick = { onNavigate(screen) },
-                modifier = Modifier
-                    .width(100.dp)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .width(100.dp)
+                        .fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = contentColor
-                )
+                colors =
+                    ButtonDefaults.buttonColors(
+                        contentColor = contentColor,
+                    ),
             ) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Icon(
                         imageVector = icon,
@@ -114,7 +120,7 @@ fun NavigationButtons(
                     Text(
                         text = title,
                         fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             }
@@ -128,6 +134,6 @@ fun CustomTopBarPreview() {
     CustomTopBar(
         onBackPressed = {},
         onNavigate = {},
-        currentScreen = Screen.Home
+        currentScreen = Screen.Home,
     )
 }

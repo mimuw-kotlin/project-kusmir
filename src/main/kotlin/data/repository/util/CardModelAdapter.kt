@@ -7,14 +7,14 @@ import domain.model.Card
 import domain.model.MtgColor
 import domain.model.MtgFormat
 
-
 fun CardDb.toDomain(): Card {
     return Card(
         id = id,
         name = name,
         colorIdentity = parseColorsList(colors),
-        legalities = legalities
-            .mapKeys { (key, _) -> parseMtgFormatString(key) },
+        legalities =
+            legalities
+                .mapKeys { (key, _) -> parseMtgFormatString(key) },
         type = type,
         imageSource = imageSource,
         cropImageSource = cropImageSource,
@@ -26,33 +26,37 @@ fun JsonObject.toDatabase(): CardDb {
     val name = this.get("name").asString
     val colorIdentity =
         this.getAsJsonArray("color_identity")
-        .map { it.asString }
+            .map { it.asString }
 
-    val formatsList = listOf(
-        "standard", "future", "historic", "timeless", "gladiator",
-        "pioneer", "explorer", "modern", "legacy", "pauper",
-        "vintage", "penny", "commander", "oathbreaker", "standardbrawl",
-        "brawl", "alchemy", "paupercommander", "duel",
-        "oldschool", "premodern", "predh"
-    )
+    val formatsList =
+        listOf(
+            "standard", "future", "historic", "timeless", "gladiator",
+            "pioneer", "explorer", "modern", "legacy", "pauper",
+            "vintage", "penny", "commander", "oathbreaker", "standardbrawl",
+            "brawl", "alchemy", "paupercommander", "duel",
+            "oldschool", "premodern", "predh",
+        )
 
-    val legalities = formatsList.associateWith { format ->
-        get("legalities").asJsonObject
-        .get(format).asString.let { parseLegalityString(it) }
-    }
+    val legalities =
+        formatsList.associateWith { format ->
+            get("legalities").asJsonObject
+                .get(format).asString.let { parseLegalityString(it) }
+        }
 
     val type = get("type_line").asString
 
     val layout = get("layout").asString
-    val imageUris = if (layout.equals("transform")
-        || layout.equals("modal_dfc") || layout.equals("reversible_card")
-        || layout.equals("art_series") || layout.equals("double_faced_token")) {
+    val imageUris =
+        if (layout.equals("transform") ||
+            layout.equals("modal_dfc") || layout.equals("reversible_card") ||
+            layout.equals("art_series") || layout.equals("double_faced_token")
+        ) {
             this.get("card_faces").asJsonArray
-            .get(0).asJsonObject // we're interested in front face only.
-            .get("image_uris").asJsonObject
-    } else {
+                .get(0).asJsonObject // we're interested in front face only.
+                .get("image_uris").asJsonObject
+        } else {
             this.get("image_uris").asJsonObject
-    }
+        }
 
     val imageSource = imageUris.get("png").asString
     val cropImageSource = imageUris.get("art_crop").asString
@@ -70,11 +74,10 @@ private fun parseColor(colorStr: String): MtgColor {
         "C" -> MtgColor.COLORLESS
         else -> throw IllegalStateException("Color $colorStr is invalid")
     }
-
 }
 
 private fun parseMtgFormatString(mtgFormatStr: String): MtgFormat {
-    return when(mtgFormatStr) {
+    return when (mtgFormatStr) {
         "standard" -> MtgFormat.STANDARD
         "future" -> MtgFormat.FUTURE
         "historic" -> MtgFormat.HISTORIC
@@ -112,5 +115,5 @@ private fun parseLegalityString(legalityStr: String): Boolean {
 }
 
 private fun parseColorsList(colors: List<String>?): Set<MtgColor> {
-    return colors?.map { s -> parseColor(s) } ?.toSet() ?: emptySet()
+    return colors?.map { s -> parseColor(s) }?.toSet() ?: emptySet()
 }

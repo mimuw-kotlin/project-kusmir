@@ -10,7 +10,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.parameter.parametersOf
 import presentation.decks.DecksScreen
-import presentation.edit_deck.EditDeckScreen
+import presentation.editdeck.EditDeckScreen
 
 sealed class Screen {
     abstract val name: String
@@ -19,14 +19,19 @@ sealed class Screen {
     data object Home : Screen() {
         override val name = "Home"
     }
+
     @Serializable
-    data class EditDeck(val deckId: Long = -1) : Screen() {
+    data class EditDeck(
+        val deckId: Long = -1,
+    ) : Screen() {
         override val name = "Edit deck"
     }
+
     @Serializable
     data object Decks : Screen() {
         override val name = "Decks"
     }
+
     @Serializable
     data object Statistics : Screen() {
         override val name = "Statistics"
@@ -39,16 +44,15 @@ fun MainApp() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = Screen.Decks
+        startDestination = Screen.Decks,
     ) {
         composable<Screen.Home> {
-
         }
         composable<Screen.Decks> {
-           DecksScreen(
-               navController = navController,
-               viewModel = koinViewModel()
-           )
+            DecksScreen(
+                navController = navController,
+                viewModel = koinViewModel(),
+            )
         }
 
         composable<Screen.EditDeck> {
