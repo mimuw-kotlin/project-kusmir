@@ -28,13 +28,12 @@ import org.koin.core.annotation.KoinExperimentalAPI
 import presentation.Screen
 import presentation.common.components.CustomTooltip
 import presentation.common.components.CustomTopBar
-import presentation.common.components.DeckItem
+import presentation.decks.components.DeckItem
 import presentation.editdeck.components.AddCardMenu
 import presentation.editdeck.components.CardItem
 import presentation.editdeck.components.ChooseImagePopup
 import presentation.editdeck.components.ImportDeckPopup
 import presentation.editdeck.util.groups
-import presentation.editdeck.viewmodel.EditDeckViewModel
 
 @OptIn(KoinExperimentalAPI::class, ExperimentalFoundationApi::class)
 @Composable

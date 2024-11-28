@@ -36,7 +36,7 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import presentation.decks.DecksViewModel
-import presentation.editdeck.viewmodel.EditDeckViewModel
+import presentation.editdeck.EditDeckViewModel
 
 val module =
     module {

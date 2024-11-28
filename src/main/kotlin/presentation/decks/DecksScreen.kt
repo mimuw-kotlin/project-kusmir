@@ -19,7 +19,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 import presentation.Screen
 import presentation.common.components.CustomTopBar
-import presentation.common.components.DeckItem
+import presentation.decks.components.DeckItem
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable

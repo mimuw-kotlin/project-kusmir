@@ -1,4 +1,4 @@
-package presentation.common.components
+package presentation.decks.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

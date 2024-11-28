@@ -1,4 +1,4 @@
-package presentation.editdeck.viewmodel
+package presentation.editdeck
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,8 +9,6 @@ import domain.usecases.deck.DecksUseCases
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import presentation.editdeck.EditDeckEvent
-import presentation.editdeck.EditDeckState
 
 class EditDeckViewModel(
     private val deckUseCases: DecksUseCases,
