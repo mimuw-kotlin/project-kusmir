@@ -19,21 +19,24 @@ import kotlinx.serialization.json.Json
 const val DELAY_MS: Long = 100
 const val BASE_URL = "https://api.scryfall.com"
 
-class ScryfallApiImpl: ScryfallApi {
-    private val httpClient = HttpClient(Apache) {
-        install(ContentNegotiation) {
-            json(Json {
-                ignoreUnknownKeys = true
-                useAlternativeNames = false
-            })
-        }
-        defaultRequest {
-            headers {
-                append("User-Agent", "mtgo-tracker-dev")
-                append("Accept", "application/json;q=0.9,*/*;q=0.8")
+class ScryfallApiImpl : ScryfallApi {
+    private val httpClient =
+        HttpClient(Apache) {
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        ignoreUnknownKeys = true
+                        useAlternativeNames = false
+                    },
+                )
+            }
+            defaultRequest {
+                headers {
+                    append("User-Agent", "mtgo-tracker-dev")
+                    append("Accept", "application/json;q=0.9,*/*;q=0.8")
+                }
             }
         }
-    }
 
     private val mutex = Mutex()
     private var lastCallTime: Long = System.currentTimeMillis()
@@ -69,8 +72,9 @@ class ScryfallApiImpl: ScryfallApi {
     }
 
     override suspend fun getCardsChannel(type: String): ByteReadChannel {
-        val url = Gson().fromJson(fetchBulkData(type).bodyAsText(), JsonObject::class.java)
-            .get("download_uri").asString
+        val url =
+            Gson().fromJson(fetchBulkData(type).bodyAsText(), JsonObject::class.java)
+                .get("download_uri").asString
 
         return httpClient.get {
             url(url)
