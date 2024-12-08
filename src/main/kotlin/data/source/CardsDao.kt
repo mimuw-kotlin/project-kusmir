@@ -1,22 +1,33 @@
-package data.data_source
+package data.source
 
 import data.local.database.CardDb
-import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
 interface CardsDao {
-    suspend fun getAll(): Flow<List<CardDb>>
     suspend fun getById(id: Uuid): CardDb?
+
     suspend fun getByName(name: String): CardDb?
+
     suspend fun deleteWithId(id: Uuid)
+
     suspend fun deleteWithIds(ids: List<Uuid>)
+
+    suspend fun searchCards(
+        query: String,
+        limit: Long = 10,
+    ): List<String>
+
     suspend fun insert(
         id: Uuid,
         name: String,
         colors: List<String>?,
         legalities: Map<String, Boolean>,
-        imageSource: String
+        type: String,
+        imageSource: String,
+        cropImageSource: String,
     )
+
     suspend fun insert(card: CardDb)
+
     suspend fun insertMultiple(cards: List<CardDb>)
 }
