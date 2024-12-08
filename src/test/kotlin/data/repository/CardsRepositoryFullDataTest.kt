@@ -13,9 +13,9 @@ import data.sqldelight.CustomAdaptersImpl
 import domain.model.MtgColor
 import domain.repository.CardsRepository
 import kotlinx.coroutines.test.runTest
-import mock.ScryfallApiMock
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import util.mock.ScryfallApiMock
 import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
