@@ -5,6 +5,7 @@ package util
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import app.softwork.uuid.sqldelight.UuidByteArrayAdapter
 import data.local.database.CardDb
+import data.local.database.Card_deck
 import data.local.database.Database
 import data.sqldelight.CustomAdaptersImpl
 import kotlin.uuid.ExperimentalUuidApi
@@ -18,34 +19,47 @@ internal fun mockCardDatabase(): Database {
 
     return Database(
         driver = driver,
-        cardDbAdapter = CardDb.Adapter(
-            idAdapter = UuidByteArrayAdapter,
-            colorsAdapter = CustomAdaptersImpl().ListStringAdapter(),
-            legalitiesAdapter = CustomAdaptersImpl().legalitiesAdapter()
-        )
+        cardDbAdapter =
+            CardDb.Adapter(
+                idAdapter = UuidByteArrayAdapter,
+                colorsAdapter = CustomAdaptersImpl().listStringAdapter(),
+                legalitiesAdapter = CustomAdaptersImpl().legalitiesAdapter(),
+            ),
+        card_deckAdapter =
+            Card_deck.Adapter(
+                cardIdAdapter = UuidByteArrayAdapter,
+            ),
     )
 }
 
-internal fun sampleCardDbList(): List<CardDb> = listOf(
-    CardDb(
-        id = Uuid.random(),
-        name = "Test Card One",
-        colors = listOf("W"),
-        legalities = mapOf(
-            "standard" to false,
-            "pioneer" to true
+@OptIn(ExperimentalUuidApi::class)
+internal fun sampleCardDbList(): List<CardDb> =
+    listOf(
+        CardDb(
+            id = Uuid.random(),
+            name = "Test Card One",
+            colors = listOf("W"),
+            legalities =
+                mapOf(
+                    "standard" to false,
+                    "pioneer" to true,
+                ),
+            type = "Creature",
+            imageSource = "invalid/image/source",
+            cropImageSource = "invalid/image/source",
         ),
-        imageSource = "invalid/image/source"
-    ),
-    CardDb(
-        id = Uuid.random(),
-        name = "Test Card Two",
-        colors = listOf("R", "G", "B"),
-        legalities = mapOf(
-            "modern" to false,
-            "standard" to true,
-            "pioneer" to true
+        CardDb(
+            id = Uuid.random(),
+            name = "Test Card Two",
+            colors = listOf("R", "G", "B"),
+            legalities =
+                mapOf(
+                    "modern" to false,
+                    "standard" to true,
+                    "pioneer" to true,
+                ),
+            type = "Instant",
+            imageSource = "invalid/image/source",
+            cropImageSource = "invalid/image/source",
         ),
-        imageSource = "invalid/image/source"
-    ),
-)
+    )

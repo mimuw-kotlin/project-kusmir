@@ -23,7 +23,7 @@ enum class MtgFormat {
     OLDSCHOOL,
     PREMODERN,
     PREDH,
-    UNKNOWN
+    UNKNOWN,
 }
 
 enum class MtgColor {
@@ -33,5 +33,5 @@ enum class MtgColor {
     GREEN,
     RED,
     COLORLESS,
-    GENERIC
+    GENERIC,
 }

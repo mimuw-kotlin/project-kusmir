@@ -1,37 +1,25 @@
-package data.data_source
+package data.source
 
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToList
 import data.local.database.CardDb
 import data.local.database.Database
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlin.uuid.Uuid
 
 class CardsDaoImpl(
-    val db: Database
-): CardsDao {
+    val db: Database,
+) : CardsDao {
+    private val queries = db.databaseQueries
 
-    private val queries = db.cardQueries
-
-    override suspend fun getAll(): Flow<List<CardDb>> {
-        return withContext(Dispatchers.IO) {
-            queries.entries().asFlow().mapToList(Dispatchers.Default)
-        }
-    }
-
-    override suspend fun getById(id: Uuid): CardDb? {
-        return withContext(Dispatchers.IO) {
+    override suspend fun getById(id: Uuid): CardDb? =
+        withContext(Dispatchers.IO) {
             queries.getById(id).executeAsOneOrNull()
         }
-    }
 
-    override suspend fun getByName(name: String): CardDb? {
-        return withContext(Dispatchers.IO) {
+    override suspend fun getByName(name: String): CardDb? =
+        withContext(Dispatchers.IO) {
             queries.getByName(name).executeAsOneOrNull()
         }
-    }
 
     override suspend fun deleteWithId(id: Uuid) {
         withContext(Dispatchers.IO) {
@@ -45,20 +33,32 @@ class CardsDaoImpl(
         }
     }
 
+    override suspend fun searchCards(
+        query: String,
+        limit: Long,
+    ): List<String> =
+        withContext(Dispatchers.IO) {
+            queries.fuzzySearchCard(query, limit).executeAsList()
+        }
+
     override suspend fun insert(
         id: Uuid,
         name: String,
         colors: List<String>?,
         legalities: Map<String, Boolean>,
-        imageSource: String
+        type: String,
+        imageSource: String,
+        cropImageSource: String,
     ) {
         withContext(Dispatchers.IO) {
-            queries.insert(
+            queries.insertCard(
                 id,
                 name,
                 colors,
                 legalities,
-                imageSource
+                type,
+                imageSource,
+                cropImageSource,
             )
         }
     }
@@ -66,12 +66,14 @@ class CardsDaoImpl(
     override suspend fun insert(card: CardDb) {
         withContext(Dispatchers.IO) {
             with(card) {
-                queries.insert(
+                queries.insertCard(
                     id,
                     name,
                     colors,
                     legalities,
-                    imageSource
+                    type,
+                    imageSource,
+                    cropImageSource,
                 )
             }
         }
@@ -81,16 +83,17 @@ class CardsDaoImpl(
         withContext(Dispatchers.IO) {
             db.transaction {
                 cards.forEach { card ->
-                    queries.insert(
+                    queries.insertCard(
                         card.id,
                         card.name,
                         card.colors,
                         card.legalities,
-                        card.imageSource
+                        card.type,
+                        card.imageSource,
+                        card.cropImageSource,
                     )
                 }
             }
         }
     }
-
 }
