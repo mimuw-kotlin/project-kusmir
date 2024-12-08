@@ -32,7 +32,7 @@ class EditDeckViewModel(
             _editDeckState.value =
                 editDeckState.value.copy(
                     deckName = "New deck",
-                    imageUrl = "https://cards.scryfall.io/normal/front/5/6/56ebc372-aabd-4174-a943-c7bf59e5028d.jpg?1562629953",
+                    imageUrl = null,
                     mainDeck = DeckList(),
                     sideboard = DeckList(),
                 )

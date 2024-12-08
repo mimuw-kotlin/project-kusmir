@@ -1,5 +1,6 @@
 package presentation.decks.components
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 
+const val DEFAULT_DECK_IMAGE = "/img/colorpie.png"
+
 @Composable
 fun DeckItem(
     deckName: String,
@@ -26,8 +29,7 @@ fun DeckItem(
     Box(
         modifier = modifier,
     ) {
-        // TODO: Change placeholder image
-        val imageSource = deckImageUrl ?: "resources/img/MausoleumWanderer.jpg"
+        val imageSource = deckImageUrl ?: javaClass.getResource(DEFAULT_DECK_IMAGE)?.path
         AsyncImage(
             model = imageSource,
             contentDescription = null,
@@ -37,7 +39,7 @@ fun DeckItem(
                     .aspectRatio(10f / 7)
                     .clip(RoundedCornerShape(16.dp))
                     .height(300.dp),
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.Fit,
         )
 
         BasicTextField(
@@ -62,4 +64,15 @@ fun DeckItem(
                     .background(Color.Black.copy(alpha = 0.8f)),
         )
     }
+}
+
+@Preview
+@Composable
+fun PreviewDeckItem() {
+    DeckItem(
+        deckName = "Sample Deck",
+        deckImageUrl = null,
+        onDeckNameChanged = {},
+        modifier = Modifier.padding(16.dp),
+    )
 }
