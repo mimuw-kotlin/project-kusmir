@@ -1,6 +1,6 @@
 @file:Suppress("ktlint:standard:no-wildcard-imports")
 
-package mock
+package util.mock
 
 import data.network.ScryfallApi
 import io.ktor.client.statement.HttpResponse

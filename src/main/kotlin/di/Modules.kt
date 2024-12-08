@@ -1,6 +1,5 @@
 package di
 
-import DatabaseDriverFactory
 import app.softwork.uuid.sqldelight.UuidByteArrayAdapter
 import data.local.database.CardDb
 import data.local.database.Card_deck
@@ -37,6 +36,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import presentation.decks.DecksViewModel
 import presentation.editdeck.EditDeckViewModel
+import util.DatabaseDriverFactory
 
 val module =
     module {
