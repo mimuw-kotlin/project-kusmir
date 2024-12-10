@@ -8,7 +8,6 @@ import domain.usecases.deck.DecksUseCases
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 class DecksViewModel(
     private val useCases: DecksUseCases,
@@ -33,13 +32,5 @@ class DecksViewModel(
                             decks = decks,
                         )
                 }.launchIn(viewModelScope)
-    }
-
-    // DEBUG ONLY
-    fun fetchAndUpdateCards() {
-        viewModelScope.launch {
-            useCases.fetchAndUpdateCards()
-            println("Fetched all data")
-        }
     }
 }

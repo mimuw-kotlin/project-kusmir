@@ -72,13 +72,5 @@ fun DecksScreen(
                 )
             }
         }
-
-        Button(
-            onClick = {
-                viewModel.fetchAndUpdateCards()
-            },
-        ) {
-            Text("UPDATE")
-        }
     }
 }

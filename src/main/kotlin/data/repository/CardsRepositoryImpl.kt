@@ -15,6 +15,8 @@ import io.ktor.util.cio.writeChannel
 import io.ktor.utils.io.copyAndClose
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -75,6 +77,9 @@ class CardsRepositoryImpl(
             }
         }
 
+        val currentTime = Clock.System.now()
+        cardsDao.insertMetadata("lastFetchInstant", currentTime.toString())
+
         tempFile.delete()
     }
 
@@ -82,4 +87,9 @@ class CardsRepositoryImpl(
         query: String,
         limit: Long,
     ): List<String> = cardsDao.searchCards(query, limit)
+
+    override suspend fun getLastFetchInstant(): Instant? {
+        val instantString: String? = cardsDao.getMetadata("lastFetchInstant")
+        return instantString?.let { Instant.parse(it) }
+    }
 }

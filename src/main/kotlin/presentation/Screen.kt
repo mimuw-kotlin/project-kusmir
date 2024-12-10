@@ -11,6 +11,8 @@ import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.parameter.parametersOf
 import presentation.decks.DecksScreen
 import presentation.editdeck.EditDeckScreen
+import presentation.home.HomeScreen
+import presentation.statistics.StatisticsScreen
 
 sealed class Screen {
     abstract val name: String
@@ -44,14 +46,24 @@ fun MainApp() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = Screen.Decks,
+        startDestination = Screen.Home,
     ) {
         composable<Screen.Home> {
+            HomeScreen(
+                navController = navController,
+                viewModel = koinViewModel(),
+            )
         }
         composable<Screen.Decks> {
             DecksScreen(
                 navController = navController,
                 viewModel = koinViewModel(),
+            )
+        }
+
+        composable<Screen.Statistics> {
+            StatisticsScreen(
+                navController = navController,
             )
         }
 

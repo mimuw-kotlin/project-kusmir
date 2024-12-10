@@ -1,8 +1,8 @@
-package domain.usecases.deck
+package domain.usecases.cards
 
 import domain.repository.CardsRepository
 
-class FetchAndUpdateCardsUseCase(
+class FetchCardsDataUseCase(
     private val repository: CardsRepository,
 ) {
     suspend operator fun invoke() {

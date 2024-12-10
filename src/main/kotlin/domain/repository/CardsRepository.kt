@@ -1,6 +1,7 @@
 package domain.repository
 
 import domain.model.Card
+import kotlinx.datetime.Instant
 import kotlin.uuid.Uuid
 
 interface CardsRepository {
@@ -14,4 +15,6 @@ interface CardsRepository {
         query: String,
         limit: Long = 10,
     ): List<String>
+
+    suspend fun getLastFetchInstant(): Instant?
 }

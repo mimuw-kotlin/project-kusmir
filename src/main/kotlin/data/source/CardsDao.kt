@@ -30,4 +30,11 @@ interface CardsDao {
     suspend fun insert(card: CardDb)
 
     suspend fun insertMultiple(cards: List<CardDb>)
+
+    suspend fun insertMetadata(
+        key: String,
+        value: String,
+    )
+
+    suspend fun getMetadata(key: String): String?
 }

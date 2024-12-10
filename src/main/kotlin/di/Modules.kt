@@ -16,11 +16,12 @@ import data.sqldelight.CustomAdaptersImpl
 import domain.repository.CardsRepository
 import domain.repository.DecksRepository
 import domain.usecases.cards.CardsUseCases
+import domain.usecases.cards.FetchCardsDataUseCase
 import domain.usecases.cards.GetCardByNameUseCase
 import domain.usecases.cards.GetCardsSearchResultsUseCase
+import domain.usecases.cards.GetLastFetchDateTimeUseCase
 import domain.usecases.deck.DecksUseCases
 import domain.usecases.deck.DeleteDeckUseCase
-import domain.usecases.deck.FetchAndUpdateCardsUseCase
 import domain.usecases.deck.GetAllDecksUseCase
 import domain.usecases.deck.GetDeckUseCase
 import domain.usecases.deck.ImportDeckUseCase
@@ -36,10 +37,12 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import presentation.decks.DecksViewModel
 import presentation.editdeck.EditDeckViewModel
+import presentation.home.HomeViewModel
 import util.DatabaseDriverFactory
 
 val module =
     module {
+        // Data layer
         single<CoroutineDispatcher> { Dispatchers.Default }
         single {
             Database(
@@ -66,21 +69,26 @@ val module =
 
         singleOf(::DeckRepositoryImpl).bind<DecksRepository>()
 
+        // Use cases
         singleOf(::DecksUseCases)
         singleOf(::GetDeckUseCase)
         singleOf(::GetAllDecksUseCase)
         singleOf(::SaveDeckUseCase)
-        singleOf(::FetchAndUpdateCardsUseCase)
         singleOf(::ImportDeckUseCase)
         singleOf(::DeleteDeckUseCase)
 
         singleOf(::CardsUseCases)
         singleOf(::GetCardsSearchResultsUseCase)
         singleOf(::GetCardByNameUseCase)
+        singleOf(::FetchCardsDataUseCase)
+        singleOf(::GetLastFetchDateTimeUseCase)
 
+        // View models
         viewModel { (deckId: Long) -> EditDeckViewModel(get(), get(), deckId) }
 
         viewModelOf(::DecksViewModel)
+
+        viewModelOf(::HomeViewModel)
     }
 
 fun initKoin(config: KoinAppDeclaration? = null) {

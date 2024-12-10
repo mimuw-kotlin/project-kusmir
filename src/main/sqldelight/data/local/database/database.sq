@@ -19,6 +19,10 @@ CREATE TABLE IF NOT EXISTS 'cardDb'(
     'cropImageSource' TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS 'cardMetadataDb' (
+    key TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
+);
 
 CREATE TABLE IF NOT EXISTS 'deckDb' (
     'id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -33,6 +37,7 @@ CREATE TABLE IF NOT EXISTS 'card_deck' (
     FOREIGN KEY (cardId) REFERENCES cardDb(id) ON DELETE CASCADE,
     FOREIGN KEY (deckId) REFERENCES deckDb(id) ON DELETE CASCADE
 );
+
 
 ---SEARCH TABLE
 CREATE VIRTUAL TABLE IF NOT EXISTS 'cardDb_fts' USING fts4(
@@ -100,6 +105,15 @@ INSERT OR REPLACE INTO 'cardDb' (
     :imageSource,
     :cropImageSource
 );
+
+---CARD METADATA QUERIES
+insertCardMetadata:
+INSERT INTO 'cardMetadataDb' (key, value)
+VALUES (:key, :value);
+
+getCardMetadata:
+SELECT value FROM 'cardMetadataDb'
+WHERE key = :key;
 
 ---DECK QUERIES
 insertDeck:

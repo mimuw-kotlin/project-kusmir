@@ -6,6 +6,4 @@ data class DecksUseCases(
     val saveDeck: SaveDeckUseCase,
     val importDeck: ImportDeckUseCase,
     val deleteDeckUseCase: DeleteDeckUseCase,
-    // DEBUG ONLY
-    val fetchAndUpdateCards: FetchAndUpdateCardsUseCase,
 )

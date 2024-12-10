@@ -96,4 +96,18 @@ class CardsDaoImpl(
             }
         }
     }
+
+    override suspend fun insertMetadata(
+        key: String,
+        value: String,
+    ) {
+        withContext(Dispatchers.IO) {
+            queries.insertCardMetadata(key, value)
+        }
+    }
+
+    override suspend fun getMetadata(key: String): String? =
+        withContext(Dispatchers.IO) {
+            queries.getCardMetadata(key).executeAsOneOrNull()
+        }
 }
