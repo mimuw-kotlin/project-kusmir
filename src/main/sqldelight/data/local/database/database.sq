@@ -1,0 +1,171 @@
+---IMPORTS
+import kotlin.collections.Map;
+import kotlin.collections.List;
+import kotlin.uuid.Uuid;
+
+---TABLE
+
+---DROP TRIGGER IF EXISTS cardDb_after_insert;
+---DROP TRIGGER IF EXISTS cardDb.cardDb_after_update;
+---DROP TRIGGER IF EXISTS cardDb_after_delete;
+
+CREATE TABLE IF NOT EXISTS 'cardDb'(
+    'id' BLOB AS Uuid NOT NULL PRIMARY KEY,
+    'name' TEXT NOT NULL UNIQUE,
+    'colors' TEXT AS List<kotlin.String>,
+    'legalities' TEXT AS Map<kotlin.String, kotlin.Boolean> NOT NULL,
+    'type' TEXT NOT NULL,
+    'imageSource' TEXT NOT NULL,
+    'cropImageSource' TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS 'cardMetadataDb' (
+    key TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS 'deckDb' (
+    'id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    'name' TEXT NOT NULL UNIQUE,
+    'imageSource' TEXT
+);
+
+CREATE TABLE IF NOT EXISTS 'card_deck' (
+    'cardId' BLOB AS Uuid NOT NULL,
+    'deckId' INTEGER NOT NULL,
+    'type' TEXT NOT NULL CHECK (type IN ('main', 'side')),
+    FOREIGN KEY (cardId) REFERENCES cardDb(id) ON DELETE CASCADE,
+    FOREIGN KEY (deckId) REFERENCES deckDb(id) ON DELETE CASCADE
+);
+
+
+---SEARCH TABLE
+CREATE VIRTUAL TABLE IF NOT EXISTS 'cardDb_fts' USING fts4(
+    'id' BLOB AS Uuid NOT NULL PRIMARY KEY,
+    'name' TEXT NOT NULL
+);
+
+CREATE TRIGGER IF NOT EXISTS cardDb_after_insert AFTER INSERT ON cardDb
+BEGIN
+    INSERT INTO cardDb_fts(id, name)
+    VALUES(new.id, new.name);
+END;
+
+
+CREATE TRIGGER IF NOT EXISTS cardDb_after_update AFTER UPDATE ON cardDb
+BEGIN
+    UPDATE cardDb_fts SET
+        name = new.name
+    WHERE id = old.id;
+END;
+
+
+CREATE TRIGGER IF NOT EXISTS cardDb_after_delete AFTER DELETE ON cardDb
+BEGIN
+    DELETE FROM cardDb_fts WHERE id = old.id;
+END;
+
+---CARD QUERIES
+getById:
+SELECT * FROM 'cardDb' WHERE id = :id LIMIT 1;
+
+getByName:
+SELECT * FROM 'cardDb' WHERE name = :name LIMIT 1;
+
+deleteWithIds:
+DELETE FROM 'cardDb' WHERE id IN ?;
+
+deleteWithId:
+DELETE FROM 'cardDb' WHERE id = :id;
+
+deleteAllCards:
+DELETE FROM 'cardDb';
+
+fuzzySearchCard:
+SELECT name FROM 'cardDb_fts'
+WHERE name MATCH
+CONCAT(CAST(COALESCE(:query, "") AS TEXT), "*")
+LIMIT :limit;
+
+insertCard:
+INSERT OR REPLACE INTO 'cardDb' (
+    'id',
+    'name',
+    'colors',
+    'legalities',
+    'type',
+    'imageSource',
+    'cropImageSource'
+) VALUES (
+    :id,
+    :name,
+    :colors,
+    :legalities,
+    :type,
+    :imageSource,
+    :cropImageSource
+);
+
+---CARD METADATA QUERIES
+insertCardMetadata:
+INSERT INTO 'cardMetadataDb' (key, value)
+VALUES (:key, :value);
+
+getCardMetadata:
+SELECT value FROM 'cardMetadataDb'
+WHERE key = :key;
+
+---DECK QUERIES
+insertDeck:
+INSERT INTO 'deckDb' (name, imageSource)
+VALUES (:name, :imageSource);
+
+insertCardIntoDeck:
+INSERT INTO card_deck (cardId, deckId, type)
+VALUES (:cardId, :deckId, :type);
+
+getAllDecks:
+SELECT * FROM deckDb;
+
+getCardsFromDeck:
+SELECT cardDb.*
+FROM cardDb JOIN card_deck ON cardDb.id = card_deck.cardId
+WHERE card_deck.deckId = :deckId AND card_deck.type = :type;
+
+deleteDeckById:
+DELETE FROM deckDb WHERE id = :deckId;
+
+deleteDeckByName:
+DELETE FROM deckDb WHERE name = :name;
+
+deleteAllCardsFromDeck:
+DELETE FROM card_deck
+WHERE deckId = :deckId;
+
+deleteCardFromDeck:
+DELETE FROM card_deck
+WHERE cardId = :cardId AND deckId = :deckId AND type = :type;
+
+updateDeckName:
+UPDATE deckDb
+SET name = :name
+WHERE id = :deckId;
+
+updateDeckImage:
+UPDATE deckDb
+SET imageSource = :imageSource
+WHERE id = :deckId;
+
+getDecksContainingCard:
+SELECT deckDb.*
+FROM deckDb JOIN card_deck ON deckDb.id = card_deck.deckId
+WHERE card_deck.cardId = :cardId;
+
+getDeckById:
+SELECT * FROM deckDb WHERE id = :id;
+
+getDeckByName:
+SELECT * FROM deckDb WHERE name = :name;
+
+getLastInsertedDeckId:
+SELECT last_insert_rowid();
