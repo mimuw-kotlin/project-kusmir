@@ -7,9 +7,10 @@ import domain.model.Card
 import domain.model.MtgColor
 import domain.model.MtgFormat
 
-fun CardDb.toDomain(): Card {
-    return Card(
+fun CardDb.toDomain(): Card =
+    Card(
         id = id,
+        mtgoId = mtgoId,
         name = name,
         colorIdentity = parseColorsList(colors),
         legalities =
@@ -19,28 +20,53 @@ fun CardDb.toDomain(): Card {
         imageSource = imageSource,
         cropImageSource = cropImageSource,
     )
-}
 
-fun JsonObject.toDatabase(): CardDb {
+fun JsonObject.toDatabase(): CardDb? {
     val id = this.get("oracle_id").asString.toUuid()
+
+    // Some cards are not present in mtgo, but appear in paper game,
+    // we simply ignore them.
+    val mtgoId = this.get("mtgo_id")?.asLong ?: return null
+
     val name = this.get("name").asString
     val colorIdentity =
-        this.getAsJsonArray("color_identity")
+        this
+            .getAsJsonArray("color_identity")
             .map { it.asString }
 
     val formatsList =
         listOf(
-            "standard", "future", "historic", "timeless", "gladiator",
-            "pioneer", "explorer", "modern", "legacy", "pauper",
-            "vintage", "penny", "commander", "oathbreaker", "standardbrawl",
-            "brawl", "alchemy", "paupercommander", "duel",
-            "oldschool", "premodern", "predh",
+            "standard",
+            "future",
+            "historic",
+            "timeless",
+            "gladiator",
+            "pioneer",
+            "explorer",
+            "modern",
+            "legacy",
+            "pauper",
+            "vintage",
+            "penny",
+            "commander",
+            "oathbreaker",
+            "standardbrawl",
+            "brawl",
+            "alchemy",
+            "paupercommander",
+            "duel",
+            "oldschool",
+            "premodern",
+            "predh",
         )
 
     val legalities =
         formatsList.associateWith { format ->
-            get("legalities").asJsonObject
-                .get(format).asString.let { parseLegalityString(it) }
+            get("legalities")
+                .asJsonObject
+                .get(format)
+                .asString
+                .let { parseLegalityString(it) }
         }
 
     val type = get("type_line").asString
@@ -48,12 +74,18 @@ fun JsonObject.toDatabase(): CardDb {
     val layout = get("layout").asString
     val imageUris =
         if (layout.equals("transform") ||
-            layout.equals("modal_dfc") || layout.equals("reversible_card") ||
-            layout.equals("art_series") || layout.equals("double_faced_token")
+            layout.equals("modal_dfc") ||
+            layout.equals("reversible_card") ||
+            layout.equals("art_series") ||
+            layout.equals("double_faced_token")
         ) {
-            this.get("card_faces").asJsonArray
-                .get(0).asJsonObject // we're interested in front face only.
-                .get("image_uris").asJsonObject
+            this
+                .get("card_faces")
+                .asJsonArray
+                .get(0)
+                .asJsonObject // we're interested in front face only.
+                .get("image_uris")
+                .asJsonObject
         } else {
             this.get("image_uris").asJsonObject
         }
@@ -61,11 +93,11 @@ fun JsonObject.toDatabase(): CardDb {
     val imageSource = imageUris.get("png").asString
     val cropImageSource = imageUris.get("art_crop").asString
 
-    return CardDb(id, name, colorIdentity, legalities, type, imageSource, cropImageSource)
+    return CardDb(id, mtgoId, name, colorIdentity, legalities, type, imageSource, cropImageSource)
 }
 
-private fun parseColor(colorStr: String): MtgColor {
-    return when (colorStr) {
+private fun parseColor(colorStr: String): MtgColor =
+    when (colorStr) {
         "W" -> MtgColor.WHITE
         "R" -> MtgColor.RED
         "U" -> MtgColor.BLUE
@@ -74,10 +106,9 @@ private fun parseColor(colorStr: String): MtgColor {
         "C" -> MtgColor.COLORLESS
         else -> throw IllegalStateException("Color $colorStr is invalid")
     }
-}
 
-private fun parseMtgFormatString(mtgFormatStr: String): MtgFormat {
-    return when (mtgFormatStr) {
+private fun parseMtgFormatString(mtgFormatStr: String): MtgFormat =
+    when (mtgFormatStr) {
         "standard" -> MtgFormat.STANDARD
         "future" -> MtgFormat.FUTURE
         "historic" -> MtgFormat.HISTORIC
@@ -102,18 +133,14 @@ private fun parseMtgFormatString(mtgFormatStr: String): MtgFormat {
         "predh" -> MtgFormat.PREDH
         else -> MtgFormat.UNKNOWN
     }
-}
 
-private fun parseLegalityString(legalityStr: String): Boolean {
-    return when (legalityStr) {
+private fun parseLegalityString(legalityStr: String): Boolean =
+    when (legalityStr) {
         "legal" -> true
         "not_legal" -> false
         "banned" -> false
         "restricted" -> true // TODO: This one technically doesn't work like that
         else -> throw IllegalStateException("Invalid format legality $legalityStr")
     }
-}
 
-private fun parseColorsList(colors: List<String>?): Set<MtgColor> {
-    return colors?.map { s -> parseColor(s) }?.toSet() ?: emptySet()
-}
+private fun parseColorsList(colors: List<String>?): Set<MtgColor> = colors?.map { s -> parseColor(s) }?.toSet() ?: emptySet()

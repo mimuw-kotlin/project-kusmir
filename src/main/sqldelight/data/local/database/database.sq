@@ -11,6 +11,7 @@ import kotlin.uuid.Uuid;
 
 CREATE TABLE IF NOT EXISTS 'cardDb'(
     'id' BLOB AS Uuid NOT NULL PRIMARY KEY,
+    'mtgoId' INTEGER NOT NULL,
     'name' TEXT NOT NULL UNIQUE,
     'colors' TEXT AS List<kotlin.String>,
     'legalities' TEXT AS Map<kotlin.String, kotlin.Boolean> NOT NULL,
@@ -69,6 +70,9 @@ END;
 getById:
 SELECT * FROM 'cardDb' WHERE id = :id LIMIT 1;
 
+getByMtgoId:
+SELECT * FROM 'cardDb' WHERE mtgoId = :mtgoId LIMIT 1;
+
 getByName:
 SELECT * FROM 'cardDb' WHERE name = :name LIMIT 1;
 
@@ -90,6 +94,7 @@ LIMIT :limit;
 insertCard:
 INSERT OR REPLACE INTO 'cardDb' (
     'id',
+    'mtgoId',
     'name',
     'colors',
     'legalities',
@@ -98,6 +103,7 @@ INSERT OR REPLACE INTO 'cardDb' (
     'cropImageSource'
 ) VALUES (
     :id,
+    :mtgoId,
     :name,
     :colors,
     :legalities,

@@ -22,6 +22,10 @@ class ScryfallApiMock(
         TODO("Not yet implemented")
     }
 
+    override suspend fun fetchCardByMtgoId(mtgoId: Long): HttpResponse {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun fetchCardByName(name: String): HttpResponse {
         TODO("Not yet implemented")
     }

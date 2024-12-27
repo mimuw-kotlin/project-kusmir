@@ -61,6 +61,11 @@ class ScryfallApiImpl : ScryfallApi {
         return performApiCallWithDelay(requestUrl)
     }
 
+    override suspend fun fetchCardByMtgoId(mtgoId: Long): HttpResponse {
+        val requestUrl = "$BASE_URL/cards/mtgo/$mtgoId"
+        return performApiCallWithDelay(requestUrl)
+    }
+
     override suspend fun fetchCardByName(name: String): HttpResponse {
         val requestUrl = "$BASE_URL/cards/named?exact=$name".replace(" ", "%20")
         return performApiCallWithDelay(requestUrl)
@@ -73,12 +78,15 @@ class ScryfallApiImpl : ScryfallApi {
 
     override suspend fun getCardsChannel(type: String): ByteReadChannel {
         val url =
-            Gson().fromJson(fetchBulkData(type).bodyAsText(), JsonObject::class.java)
-                .get("download_uri").asString
+            Gson()
+                .fromJson(fetchBulkData(type).bodyAsText(), JsonObject::class.java)
+                .get("download_uri")
+                .asString
 
-        return httpClient.get {
-            url(url)
-            method = HttpMethod.Get
-        }.bodyAsChannel()
+        return httpClient
+            .get {
+                url(url)
+                method = HttpMethod.Get
+            }.bodyAsChannel()
     }
 }

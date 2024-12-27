@@ -2,6 +2,7 @@ package data.repository
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import data.local.database.CardDb
@@ -11,6 +12,7 @@ import data.repository.util.toDomain
 import data.source.CardsDao
 import domain.model.Card
 import domain.repository.CardsRepository
+import io.ktor.client.call.body
 import io.ktor.util.cio.writeChannel
 import io.ktor.utils.io.copyAndClose
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +25,8 @@ import java.io.IOException
 import java.io.InputStreamReader
 import kotlin.uuid.Uuid
 
+const val BULK_INSERT_SIZE = 5000
+
 class CardsRepositoryImpl(
     private val cardsDao: CardsDao,
     private val scryfallApi: ScryfallApi,
@@ -30,6 +34,21 @@ class CardsRepositoryImpl(
     override suspend fun getCardById(id: Uuid): Card? {
         val card = cardsDao.getById(id)
         return card?.toDomain()
+    }
+
+    override suspend fun getCardByMtgoId(mtgoId: Long): Card? {
+        val card = cardsDao.getByMtgoId(mtgoId)
+        if (card != null) {
+            return card.toDomain()
+        } else {
+            val response = scryfallApi.fetchCardByMtgoId(mtgoId)
+            val stringBody: String = response.body()
+            val cardDb = Gson().fromJson(stringBody, JsonObject::class.java).toDatabase()
+            return cardDb
+                ?.also {
+                    cardsDao.insert(cardDb)
+                }?.toDomain()
+        }
     }
 
     override suspend fun getCardByName(name: String): Card? {
@@ -62,10 +81,9 @@ class CardsRepositoryImpl(
                 val allCards: MutableList<CardDb> = mutableListOf()
                 while (jsonReader.hasNext() && jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
                     val jsonObject = gson.fromJson<JsonElement>(jsonReader, JsonElement::class.java).asJsonObject
-                    allCards.add(jsonObject.toDatabase())
+                    jsonObject.toDatabase()?.let { allCards.add(it) }
 
-                    if (allCards.size >= 5000) {
-                        println(allCards)
+                    if (allCards.size >= BULK_INSERT_SIZE) {
                         cardsDao.insertMultiple(allCards)
                         allCards.clear()
                     }

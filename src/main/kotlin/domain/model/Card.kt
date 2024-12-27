@@ -4,6 +4,7 @@ import kotlin.uuid.Uuid
 
 data class Card(
     val id: Uuid,
+    val mtgoId: Long,
     val name: String,
     val colorIdentity: Set<MtgColor>,
     val legalities: Map<MtgFormat, Boolean>,
@@ -17,7 +18,5 @@ data class Card(
         return id == other.id
     }
 
-    override fun hashCode(): Int {
-        return id.hashCode()
-    }
+    override fun hashCode(): Int = id.hashCode()
 }

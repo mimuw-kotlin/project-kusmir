@@ -6,6 +6,8 @@ import io.ktor.utils.io.*
 interface ScryfallApi {
     suspend fun fetchCardById(id: String): HttpResponse
 
+    suspend fun fetchCardByMtgoId(mtgoId: Long): HttpResponse
+
     suspend fun fetchCardByName(name: String): HttpResponse
 
     suspend fun fetchBulkData(type: String): HttpResponse

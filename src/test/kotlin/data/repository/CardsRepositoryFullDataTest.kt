@@ -85,6 +85,19 @@ class CardsRepositoryFullDataTest {
             )
         }
 
+    @Test
+    fun testGetByMtgoId() =
+        runTest {
+            val mtgoId = 58813L
+            val actualName = "Island"
+
+            val card = cardsRepository.getCardByMtgoId(mtgoId)
+
+            assertNotNull(card)
+            assertEquals(actualName, card.name)
+            assertEquals(mtgoId, card.mtgoId)
+        }
+
     @OptIn(ExperimentalUuidApi::class)
     @Test
     fun testGetByNameSimple() =

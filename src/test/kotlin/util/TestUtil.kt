@@ -37,6 +37,7 @@ internal fun sampleCardDbList(): List<CardDb> =
     listOf(
         CardDb(
             id = Uuid.random(),
+            mtgoId = 1,
             name = "Test Card One",
             colors = listOf("W"),
             legalities =
@@ -50,6 +51,7 @@ internal fun sampleCardDbList(): List<CardDb> =
         ),
         CardDb(
             id = Uuid.random(),
+            mtgoId = 2,
             name = "Test Card Two",
             colors = listOf("R", "G", "B"),
             legalities =
