@@ -26,6 +26,9 @@ import domain.usecases.deck.GetAllDecksUseCase
 import domain.usecases.deck.GetDeckUseCase
 import domain.usecases.deck.ImportDeckUseCase
 import domain.usecases.deck.SaveDeckUseCase
+import domain.usecases.tracking.GetLogFileUseCase
+import domain.usecases.tracking.ReadLogUseCase
+import domain.usecases.tracking.TrackingUseCases
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.koin.compose.viewmodel.dsl.viewModel
@@ -36,6 +39,7 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import presentation.decks.DecksViewModel
+import presentation.decktracker.DeckTrackerViewModel
 import presentation.editdeck.EditDeckViewModel
 import presentation.home.HomeViewModel
 import util.DatabaseDriverFactory
@@ -83,12 +87,19 @@ val module =
         singleOf(::FetchCardsDataUseCase)
         singleOf(::GetLastFetchDateTimeUseCase)
 
+        singleOf(::TrackingUseCases)
+        singleOf(::GetLogFileUseCase)
+        singleOf(::ReadLogUseCase)
+
         // View models
         viewModel { (deckId: Long) -> EditDeckViewModel(get(), get(), deckId) }
 
         viewModelOf(::DecksViewModel)
 
         viewModelOf(::HomeViewModel)
+
+        // Yes, I know. It's not really a viewmodel.
+        singleOf(::DeckTrackerViewModel)
     }
 
 fun initKoin(config: KoinAppDeclaration? = null) {
