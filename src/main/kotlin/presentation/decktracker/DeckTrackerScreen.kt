@@ -58,7 +58,7 @@ fun DeckTrackerScreen(viewModel: DeckTrackerViewModel) {
                 val animationProgress = animations[card]?.value ?: 0f
                 CardItem(
                     currentQuantity = quantity,
-                    totalQuantity = state.registeredDeck?.mainDeck?.get(card) ?: 0,
+                    totalQuantity = state.currentDeck?.mainDeck?.get(card) ?: 0,
                     cardImageUrl = card.imageSource,
                     highlightProgress = animationProgress,
                 )

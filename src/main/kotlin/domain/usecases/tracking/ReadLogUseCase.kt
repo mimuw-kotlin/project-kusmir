@@ -12,8 +12,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import java.io.File
 import java.io.RandomAccessFile
@@ -25,7 +23,9 @@ sealed class ReadLogEvent {
     ) : ReadLogEvent()
 
     data class GameStateUpdate(
-        val myCards: List<Card>,
+        val playerName: String,
+        val opponentName: String,
+        val playerCards: List<Card>,
         val opponentCards: List<Card>,
     ) : ReadLogEvent()
 
@@ -53,6 +53,21 @@ private class LogParser(
         @SerialName("ActualZone") val actualZone: String,
         @SerialName("Owner") val owner: Int,
         @SerialName("Controller") val controller: Int,
+    )
+
+    @Serializable
+    private data class PlayerInfo(
+        @SerialName("Id") val id: Int,
+        @SerialName("Name") val name: String,
+        @SerialName("LibraryCount") val libraryCount: Int,
+        @SerialName("HandCount") val handCount: Int,
+        @SerialName("Life") val life: Int,
+    )
+
+    @Serializable
+    private data class GameState(
+        @SerialName("Players") val players: List<PlayerInfo>,
+        @SerialName("Cards") val cards: List<GameStateCardItem>
     )
 
     private suspend fun processGameStarted(message: String): ReadLogEvent.GameStarted {
@@ -90,14 +105,10 @@ private class LogParser(
         val jsonStartIndex = message.indexOf("{")
         val jsonSubstring = message.substring(jsonStartIndex)
 
-        val jsonObject = Json.parseToJsonElement(jsonSubstring).jsonObject
-        val gameStateCards =
-            jsonObject["Cards"]?.jsonArray?.let {
-                Json.decodeFromJsonElement<List<GameStateCardItem>>(it)
-            } ?: emptyList()
+        val gameState = Json.decodeFromString<GameState>(jsonSubstring)
 
         val seenCards =
-            gameStateCards
+            gameState.cards
                 .groupBy { it.owner }
                 .mapValues { (_, cards) ->
                     cards
@@ -108,7 +119,9 @@ private class LogParser(
                 }
 
         return ReadLogEvent.GameStateUpdate(
-            myCards = seenCards[0].orEmpty(),
+            playerName = gameState.players[0].name,
+            opponentName = if (gameState.players.size >= 2) gameState.players[1].name else "",
+            playerCards = seenCards[0].orEmpty(),
             opponentCards = seenCards[1].orEmpty(),
         )
     }
