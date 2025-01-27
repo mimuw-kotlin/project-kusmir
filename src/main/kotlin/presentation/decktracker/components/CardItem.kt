@@ -15,7 +15,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
@@ -28,6 +30,7 @@ import kotlin.math.roundToInt
 @Composable
 private fun CardTextBar(
     imageUrl: String,
+    highlightProgress: Float = 0f,
     modifier: Modifier = Modifier,
 ) {
     val topBarRatio = 0.1f
@@ -75,6 +78,15 @@ private fun CardTextBar(
                                 val y = -(placeable.width * topBarCutRatio).roundToInt()
                                 placeable.place(x, y)
                             }
+                        }
+                        .drawWithContent {
+                            drawContent()
+                            if (highlightProgress > 0f) {
+                                drawRect(
+                                    color = Color.White.copy(alpha = highlightProgress * 0.5f),
+                                    size = this.size,
+                                )
+                            }
                         },
             )
         }
@@ -86,6 +98,7 @@ fun CardItem(
     currentQuantity: Int,
     totalQuantity: Int,
     cardImageUrl: String,
+    highlightProgress: Float = 0f,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -98,6 +111,10 @@ fun CardItem(
                 modifier = Modifier.align(Alignment.Center),
             )
         }
-        CardTextBar(cardImageUrl, modifier = Modifier.weight(0.8f))
+        CardTextBar(
+            imageUrl = cardImageUrl,
+            highlightProgress = highlightProgress,
+            modifier = Modifier.weight(0.8f),
+        )
     }
 }
