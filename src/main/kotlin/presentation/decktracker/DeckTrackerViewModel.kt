@@ -2,47 +2,38 @@ package presentation.decktracker
 
 import domain.model.Card
 import domain.model.DeckList
-import domain.usecases.tracking.ReadLogUseCase
+import domain.usecases.tracking.ReadLogEvent
 import domain.usecases.tracking.TrackingUseCases
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import domain.usecases.tracking.ReadLogUseCase.Companion.Event.GameFinished as GameFinishedEvent
-import domain.usecases.tracking.ReadLogUseCase.Companion.Event.GameStarted as GameStartedEvent
-import domain.usecases.tracking.ReadLogUseCase.Companion.Event.GameStateUpdate as GameStateUpdateEvent
-import domain.usecases.tracking.ReadLogUseCase.Companion.Event.MatchFinished as MatchFinishedEvent
-import domain.usecases.tracking.ReadLogUseCase.Companion.Event.Skipped as SkippedEvent
+import kotlinx.coroutines.launch
 
 class DeckTrackerViewModel(
-    private val trackingUseCases: TrackingUseCases,
+    trackingUseCases: TrackingUseCases,
 ) {
     private val _state = MutableStateFlow(DeckTrackerState())
     val state: StateFlow<DeckTrackerState> = _state
 
-    private var logJob: Job? = null
+    private val logReader = Job()
+    private val scope = CoroutineScope(Dispatchers.Default + logReader)
 
     init {
-        val logFile = trackingUseCases.getLogFileUseCase()
-        logJob =
-            trackingUseCases
-                .readLogUseCase(logFile) {
-                    processLogEvent(it)
-                }
+        val logEventFlow = trackingUseCases.readLog()
+        scope.launch {
+            logEventFlow.collect {
+                processLogEvent(it)
+            }
+        }
     }
 
-    private fun processLogEvent(event: ReadLogUseCase.Companion.Event) {
+    private fun processLogEvent(event: ReadLogEvent) {
+        println(event)
         when (event) {
-            is GameFinishedEvent -> {
-                // TODO: Persist seen cards
-                _state.value =
-                    state.value.copy(
-                        isWindowOpen = false,
-                        seenPlayerCards = emptyList(),
-                        seenOpponentCards = emptyList(),
-                    )
-            }
-
-            is GameStartedEvent -> {
+            is ReadLogEvent.GameStarted -> {
+                println("GAME STARTED")
                 val deck = state.value.registeredDeck ?: event.registeredDeck
                 _state.value =
                     DeckTrackerState(
@@ -51,7 +42,7 @@ class DeckTrackerViewModel(
                     )
             }
 
-            is GameStateUpdateEvent -> {
+            is ReadLogEvent.GameStateUpdate -> {
                 _state.value =
                     state.value.copy(
                         seenPlayerCards = event.myCards,
@@ -60,21 +51,21 @@ class DeckTrackerViewModel(
                     )
             }
 
-            is SkippedEvent -> {}
+            is ReadLogEvent.Skipped -> {}
 
-            is MatchFinishedEvent -> {
+            is ReadLogEvent.MatchFinished -> {
                 // TODO: persist the result
                 _state.value = DeckTrackerState(isWindowOpen = false)
             }
         }
     }
 
-    fun updateCardsLeftInDeck(seenCards: List<Card>): DeckList {
+    private fun updateCardsLeftInDeck(seenCards: List<Card>): DeckList {
         val cardsLeftInDeck =
             state.value.registeredDeck
                 ?.mainDeck
                 ?.toMutableDeckList()
-        println("Seen cards: $seenCards")
+
         seenCards.forEach { card ->
             cardsLeftInDeck?.removeCard(card)
         }

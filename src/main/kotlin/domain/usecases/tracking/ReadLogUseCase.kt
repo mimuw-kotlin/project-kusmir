@@ -4,13 +4,11 @@ import domain.model.Card
 import domain.model.Deck
 import domain.model.MutableDeckList
 import domain.repository.CardsRepository
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -19,52 +17,45 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import java.io.File
 import java.io.RandomAccessFile
-import java.nio.file.FileSystems
-import java.nio.file.Paths
-import java.nio.file.StandardWatchEventKinds
-import java.nio.file.WatchService
+import java.lang.Thread.sleep
 
-@Serializable
-private data class DecklistCardItem(
-    @SerialName("CatalogId") val mtgoId: Long,
-    @SerialName("Quantity") val quantity: Int,
-    @SerialName("Annotation") val annotation: String,
-    @SerialName("InSideboard") val inSideboard: Boolean,
-)
+sealed class ReadLogEvent {
+    data class GameStarted(
+        val registeredDeck: Deck,
+    ) : ReadLogEvent()
 
-@Serializable
-private data class GameStateCardItem(
-    @SerialName("Id") val gameId: Int,
-    @SerialName("CatalogID") val mtgoId: Long,
-    @SerialName("Zone") val zone: String,
-    @SerialName("ActualZone") val actualZone: String,
-    @SerialName("Owner") val owner: Int,
-    @SerialName("Controller") val controller: Int,
-)
+    data class GameStateUpdate(
+        val myCards: List<Card>,
+        val opponentCards: List<Card>,
+    ) : ReadLogEvent()
 
-class ReadLogUseCase(
+    data object MatchFinished : ReadLogEvent()
+
+    data object Skipped : ReadLogEvent()
+}
+
+private class LogParser(
     private val cardsRepository: CardsRepository,
 ) {
-    companion object {
-        sealed class Event {
-            data class GameStarted(
-                val registeredDeck: Deck,
-            ) : Event()
+    @Serializable
+    private data class DecklistCardItem(
+        @SerialName("CatalogId") val mtgoId: Long,
+        @SerialName("Quantity") val quantity: Int,
+        @SerialName("Annotation") val annotation: String,
+        @SerialName("InSideboard") val inSideboard: Boolean,
+    )
 
-            data class GameStateUpdate(
-                val myCards: List<Card>,
-                val opponentCards: List<Card>,
-            ) : Event()
+    @Serializable
+    private data class GameStateCardItem(
+        @SerialName("Id") val gameId: Int,
+        @SerialName("CatalogID") val mtgoId: Long,
+        @SerialName("Zone") val zone: String,
+        @SerialName("ActualZone") val actualZone: String,
+        @SerialName("Owner") val owner: Int,
+        @SerialName("Controller") val controller: Int,
+    )
 
-            data object GameFinished : Event()
-
-            data object MatchFinished : Event()
-
-            data object Skipped : Event()
-        }
-    }
-
-    private suspend fun processGameStarted(message: String): Event.GameStarted {
+    private suspend fun processGameStarted(message: String): ReadLogEvent.GameStarted {
         val mainDeck = MutableDeckList()
         val sideboard = MutableDeckList()
 
@@ -87,7 +78,7 @@ class ReadLogUseCase(
             }
         }
 
-        return Event.GameStarted(
+        return ReadLogEvent.GameStarted(
             Deck(
                 mainDeck = mainDeck.toDeckList(),
                 sideboard = sideboard.toDeckList(),
@@ -95,7 +86,7 @@ class ReadLogUseCase(
         )
     }
 
-    private suspend fun processGameSateUpdate(message: String): Event.GameStateUpdate {
+    private suspend fun processGameSateUpdate(message: String): ReadLogEvent.GameStateUpdate {
         val jsonStartIndex = message.indexOf("{")
         val jsonSubstring = message.substring(jsonStartIndex)
 
@@ -116,80 +107,122 @@ class ReadLogUseCase(
                         }
                 }
 
-        return Event.GameStateUpdate(
+        return ReadLogEvent.GameStateUpdate(
             myCards = seenCards[0].orEmpty(),
             opponentCards = seenCards[1].orEmpty(),
         )
     }
 
-    private suspend fun parseLogMessage(message: String): Event =
+    suspend fun parse(message: String): ReadLogEvent =
         when {
             message.contains("GsCloseMatchMessage") ->
-                Event.MatchFinished
+                ReadLogEvent.MatchFinished
+
             message.contains("Game Play Status Update") ->
                 processGameSateUpdate(message)
+
             message.contains("Deck Used to Join Event") ->
                 processGameStarted(message)
-            else -> Event.Skipped
-        }.also { if (it !is Event.Skipped) println(it) }
 
-    private fun readNewContent(
-        logFile: File,
-        onMessageRead: (Event) -> Unit,
-        position: Long,
-    ): Long {
-        RandomAccessFile(logFile, "r").use { file ->
-            file.seek(position) // Start from the last position
-            var line: String?
-            while (file.readLine().also { line = it } != null) {
-                runBlocking {
-                    val event = parseLogMessage(line!!)
-                    onMessageRead(event)
-                }
-            }
-            return file.filePointer
+            else -> ReadLogEvent.Skipped
         }
-    }
+}
 
-    operator fun invoke(
-        logFile: File,
-        onMessageRead: (Event) -> Unit,
-    ): Job {
-        return CoroutineScope(Dispatchers.IO).launch {
-            if (!logFile.exists()) {
-                println("Log file does not exist!")
-                return@launch
-            }
+private class FileScanner(
+    private val file: File,
+    private val separator: String,
+) {
+    fun scan(): Flow<String> =
+        flow {
+            require(file.exists()) { "File does not exist." }
 
-            // Start reading the file from the end
-            var position = logFile.length()
+            var buffer = StringBuilder()
 
-            // Create and register WatchService
-            val watchService: WatchService = FileSystems.getDefault().newWatchService()
-            Paths.get(logFile.path).parent.register(
-                watchService,
-                StandardWatchEventKinds.ENTRY_MODIFY,
-            )
-
-            println("Watching for changes in ${logFile.name}...")
-            try {
-                while (isActive) {
-                    // Apparently sometimes the changes are not marked correctly
-                    // and no poll event is triggered. To take care of it we additionally
-                    // check the file size and look for changes manually
-
-                    val currentLength = logFile.length()
-                    if (currentLength > position) {
-                        position = readNewContent(logFile, onMessageRead, position)
+            RandomAccessFile(file, "r").use { f ->
+                while (true) {
+                    val newBytes = (f.length() - f.filePointer).toInt()
+                    println("${f.length()}, ${f.filePointer}")
+                    if (newBytes == 0) {
+                        sleep(100)
+                        continue
                     }
 
-                    delay(100)
+                    val byteBuffer = ByteArray(newBytes)
+                    f.readFully(byteBuffer)
+                    buffer.append(String(byteBuffer))
+                    println(buffer)
+                    println(buffer.indexOf(separator))
+
+                    buffer
+                        .split(separator)
+                        .dropLastWhile { !it.endsWith(separator) } // Ignore incomplete messages
+                        .forEach { message ->
+                            println("message: $message")
+                            emit(message.removeSuffix(separator).trim())
+                        }
+
+                    buffer = StringBuilder(buffer.toString().substringAfterLast(separator))
                 }
-            } catch (e: Exception) {
-                println("Error monitoring log file: ${e.message}")
-            } finally {
-                watchService.close()
             }
-        }
+        }.flowOn(Dispatchers.IO)
+}
+
+private fun getMtgoRootDirectory(): File {
+    val userName = System.getProperty("user.name")
+    return File("C:\\Users\\$userName\\AppData\\Local\\Apps\\2.0")
+}
+
+private fun getLogFile(): File {
+    val root = getMtgoRootDirectory()
+
+    /*
+        I don't really understand where the logs are stored.
+        According to personal tests, the path patterns follow:
+            [mtgoRootDirectory]\
+                [some random letters]\
+                    [more random letters]\
+                        mtgo..tion_[a lot of random characters]\
+                            Logs\
+                                mtgo
+
+         Sometimes when game starts, new directory is created for the session, sometimes
+         logs are appended to the file from previous session.
+
+         How this should be resolved remains a task for the future, for now we're
+         looking for the path as described above and take one that was last modified
+     */
+
+    val subdirectories =
+        root
+            .list()
+            ?.filter { it != "Data" && File(root, it).isDirectory }
+            ?.map { File(root, it) }
+
+    val logFile =
+        subdirectories
+            ?.flatMap { file -> file.walk().toList() }
+            ?.filter {
+                it.isFile &&
+                    it.name == "mtgo.log" &&
+                    it.path.contains("mtgo..tion_")
+            }?.maxByOrNull { it.lastModified() }!!
+
+    return logFile
+}
+
+class ReadLogUseCase(
+    private val cardsRepository: CardsRepository,
+) {
+    private val mainLogFileSeparator = "\n"
+
+    operator fun invoke(): Flow<ReadLogEvent> {
+        val parser = LogParser(cardsRepository)
+        val scanner =
+            FileScanner(
+                file = getLogFile(),
+                separator = mainLogFileSeparator,
+            )
+
+        return scanner.scan().map { parser.parse(it) }
     }
 }

@@ -26,7 +26,7 @@ import domain.usecases.deck.GetAllDecksUseCase
 import domain.usecases.deck.GetDeckUseCase
 import domain.usecases.deck.ImportDeckUseCase
 import domain.usecases.deck.SaveDeckUseCase
-import domain.usecases.tracking.GetLogFileUseCase
+import domain.usecases.tracking.ParseMatchLogUseCase
 import domain.usecases.tracking.ReadLogUseCase
 import domain.usecases.tracking.TrackingUseCases
 import kotlinx.coroutines.CoroutineDispatcher
@@ -88,8 +88,8 @@ val module =
         singleOf(::GetLastFetchDateTimeUseCase)
 
         singleOf(::TrackingUseCases)
-        singleOf(::GetLogFileUseCase)
         singleOf(::ReadLogUseCase)
+        singleOf(::ParseMatchLogUseCase)
 
         // View models
         viewModel { (deckId: Long) -> EditDeckViewModel(get(), get(), deckId) }
