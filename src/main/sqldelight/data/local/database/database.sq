@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS 'cardMetadataDb' (
 
 CREATE TABLE IF NOT EXISTS 'deckDb' (
     'id' INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    'name' TEXT NOT NULL UNIQUE,
+    'name' TEXT NOT NULL,
     'imageSource' TEXT
 );
 
@@ -38,6 +38,90 @@ CREATE TABLE IF NOT EXISTS 'card_deck' (
     FOREIGN KEY (cardId) REFERENCES cardDb(id) ON DELETE CASCADE,
     FOREIGN KEY (deckId) REFERENCES deckDb(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS 'matchReportDb' (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    opponentName TEXT NOT NULL,
+    date INTEGER NOT NULL,
+    structure INTEGER NOT NULL,
+    format TEXT,
+    registeredDeckId INTEGER NOT NULL REFERENCES deckDb(id)
+);
+
+insertMatchReport:
+INSERT OR REPLACE INTO matchReportDb (
+    'id',
+    'opponentName',
+    'date',
+    'structure',
+    'format',
+    'registeredDeckId'
+) VALUES (
+    :id,
+    :opponentName,
+    :date,
+    :structure,
+    :format,
+    :registeredDeckId
+);
+
+selectAllMatchReports:
+SELECT *
+FROM 'matchReportDb';
+
+selectMatchReportById:
+SELECT *
+FROM 'matchReportDb'
+WHERE id = ?;
+
+selectMatchReportsByDeckId:
+SELECT *
+FROM 'matchReportDb'
+WHERE registeredDeckId = ?;
+
+
+CREATE TABLE IF NOT EXISTS 'gameReportDb' (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    matchReportId INTEGER NOT NULL REFERENCES matchReportDb(id) ON DELETE CASCADE,
+    result INTEGER NOT NULL, -- -1: lost 0: draw, 1: won
+    isOnThePlay INTEGER AS kotlin.Boolean NOT NULL,
+    playerMulligan INTEGER NOT NULL,
+    opponentMulligan INTEGER NOT NULL,
+    opponentRevealedCardsIds TEXT AS List<Uuid> NOT NULL,
+    playerDrawnCardsIds TEXT AS List<Uuid> NOT NULL,
+    cardsSidedOutIds TEXT AS List<Uuid> NOT NULL,
+    cardsSidedInIds TEXT AS List<Uuid> NOT NULL
+);
+
+insertGameReport:
+INSERT OR REPLACE INTO gameReportDb (
+    'id',
+    'matchReportId',
+    'result',
+    'isOnThePlay',
+    'playerMulligan',
+    'opponentMulligan',
+    'opponentRevealedCardsIds',
+    'playerDrawnCardsIds',
+    'cardsSidedOutIds',
+    'cardsSidedInIds'
+) VALUES (
+    :id,
+    :matchReportId,
+    :result,
+    :isOnThePlay,
+    :playerMulligan,
+    :opponentMulligan,
+    :opponentRevealedCardsIds,
+    :playerDrawnCardsIds,
+    :cardsSidedOutIds,
+    :cardsSidedInIds
+);
+
+selectGameReportsByMatchId:
+SELECT *
+FROM gameReportDb
+WHERE matchReportId = ?;
 
 
 ---SEARCH TABLE
@@ -173,5 +257,5 @@ SELECT * FROM deckDb WHERE id = :id;
 getDeckByName:
 SELECT * FROM deckDb WHERE name = :name;
 
-getLastInsertedDeckId:
+getLastInsertedId:
 SELECT last_insert_rowid();

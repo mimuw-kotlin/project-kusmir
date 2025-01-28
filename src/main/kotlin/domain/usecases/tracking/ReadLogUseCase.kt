@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
 import java.io.File
 import java.io.RandomAccessFile
 import java.lang.Thread.sleep
@@ -152,9 +151,10 @@ private class FileScanner(
             var buffer = StringBuilder()
 
             RandomAccessFile(file, "r").use { f ->
+                f.seek(f.length()) // Start reading at the end of the file
+
                 while (true) {
                     val newBytes = (f.length() - f.filePointer).toInt()
-                    println("${f.length()}, ${f.filePointer}")
                     if (newBytes == 0) {
                         sleep(100)
                         continue
@@ -163,15 +163,13 @@ private class FileScanner(
                     val byteBuffer = ByteArray(newBytes)
                     f.readFully(byteBuffer)
                     buffer.append(String(byteBuffer))
-                    println(buffer)
-                    println(buffer.indexOf(separator))
 
-                    buffer
-                        .split(separator)
-                        .dropLastWhile { !it.endsWith(separator) } // Ignore incomplete messages
-                        .forEach { message ->
-                            println("message: $message")
-                            emit(message.removeSuffix(separator).trim())
+                    buffer.split(separator)
+                        .forEachIndexed { index, message ->
+                            // Emit only complete messages (except for the last one which may be incomplete)
+                            if (message.isNotEmpty() && (index < buffer.split(separator).lastIndex || buffer.endsWith(separator))) {
+                                emit(message.trim())
+                            }
                         }
 
                     buffer = StringBuilder(buffer.toString().substringAfterLast(separator))

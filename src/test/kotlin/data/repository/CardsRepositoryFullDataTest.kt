@@ -8,6 +8,7 @@ import app.softwork.uuid.toUuid
 import data.local.database.CardDb
 import data.local.database.Card_deck
 import data.local.database.Database
+import data.local.database.GameReportDb
 import data.source.CardsDaoImpl
 import data.sqldelight.CustomAdaptersImpl
 import domain.model.MtgColor
@@ -49,6 +50,13 @@ class CardsRepositoryFullDataTest {
                             Card_deck.Adapter(
                                 cardIdAdapter = UuidByteArrayAdapter,
                             ),
+                        gameReportDbAdapter =
+                        GameReportDb.Adapter(
+                            opponentRevealedCardsIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+                            playerDrawnCardsIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+                            cardsSidedInIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+                            cardsSidedOutIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+                        )
                     )
 
                 val dao = CardsDaoImpl(db)

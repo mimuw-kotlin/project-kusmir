@@ -1,6 +1,7 @@
 package data.sqldelight
 
 import app.cash.sqldelight.ColumnAdapter
+import kotlin.uuid.Uuid
 
 class CustomAdaptersImpl : CustomAdapters {
     override fun listStringAdapter(): ColumnAdapter<List<String>, String> =
@@ -25,4 +26,19 @@ class CustomAdaptersImpl : CustomAdapters {
 
             override fun encode(value: Map<String, Boolean>): String = value.entries.joinToString(",") { "${it.key}:${it.value}" }
         }
+
+    override fun listUuidAdapter(): ColumnAdapter<List<Uuid>, String> =
+        object : ColumnAdapter<List<Uuid>, String> {
+            override fun decode(databaseValue: String): List<Uuid> {
+                return databaseValue
+                    .split(",") // Split the string by commas
+                    .filter { it.isNotBlank() } // Remove empty entries
+                    .map { Uuid.parse(it) }
+            }
+
+            override fun encode(value: List<Uuid>): String {
+                return value.joinToString(",") { it.toString() } // Join Uuids into a comma-separated string
+            }
+        }
+
 }

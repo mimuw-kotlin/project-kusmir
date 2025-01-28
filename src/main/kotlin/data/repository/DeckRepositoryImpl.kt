@@ -66,9 +66,7 @@ class DeckRepositoryImpl(
     }
 
     override suspend fun fetchDeckById(id: Long): Deck? =
-        dao.getDeckById(id)?.toDomain().also {
-            println(it?.imageSource)
-        }
+        dao.getDeckById(id)?.toDomain()
 
     override fun fetchAllDecks(): Flow<List<Deck>> =
         dao.getAllDecks().map { decksList ->

@@ -93,7 +93,7 @@ data class DeckList(
 
 data class Deck(
     val id: Long = -1,
-    val name: String = "",
+    val name: String = "New Deck",
     val imageSource: String? = null,
     val mainDeck: DeckList,
     val sideboard: DeckList,

@@ -4,8 +4,11 @@ import app.softwork.uuid.toUuid
 import com.google.gson.JsonObject
 import data.local.database.CardDb
 import domain.model.Card
+import domain.model.GameResult
+import domain.model.MatchReport
 import domain.model.MtgColor
 import domain.model.MtgFormat
+import kotlin.uuid.Uuid
 
 fun CardDb.toDomain(): Card =
     Card(
@@ -15,7 +18,7 @@ fun CardDb.toDomain(): Card =
         colorIdentity = parseColorsList(colors),
         legalities =
             legalities
-                .mapKeys { (key, _) -> parseMtgFormatString(key) },
+                .mapKeys { (key, _) -> key.toMtgFormat() },
         type = type,
         imageSource = imageSource,
         cropImageSource = cropImageSource,
@@ -96,19 +99,19 @@ fun JsonObject.toDatabase(): CardDb? {
     return CardDb(id, mtgoId, name, colorIdentity, legalities, type, imageSource, cropImageSource)
 }
 
-private fun parseColor(colorStr: String): MtgColor =
-    when (colorStr) {
+fun String.toMtgColor(): MtgColor =
+    when (this) {
         "W" -> MtgColor.WHITE
         "R" -> MtgColor.RED
         "U" -> MtgColor.BLUE
         "B" -> MtgColor.BLACK
         "G" -> MtgColor.GREEN
         "C" -> MtgColor.COLORLESS
-        else -> throw IllegalStateException("Color $colorStr is invalid")
+        else -> throw IllegalStateException("Color $this is invalid")
     }
 
-private fun parseMtgFormatString(mtgFormatStr: String): MtgFormat =
-    when (mtgFormatStr) {
+fun String.toMtgFormat(): MtgFormat =
+    when (this) {
         "standard" -> MtgFormat.STANDARD
         "future" -> MtgFormat.FUTURE
         "historic" -> MtgFormat.HISTORIC
@@ -134,7 +137,8 @@ private fun parseMtgFormatString(mtgFormatStr: String): MtgFormat =
         else -> MtgFormat.UNKNOWN
     }
 
-private fun parseLegalityString(legalityStr: String): Boolean =
+
+fun parseLegalityString(legalityStr: String): Boolean =
     when (legalityStr) {
         "legal" -> true
         "not_legal" -> false
@@ -143,4 +147,22 @@ private fun parseLegalityString(legalityStr: String): Boolean =
         else -> throw IllegalStateException("Invalid format legality $legalityStr")
     }
 
-private fun parseColorsList(colors: List<String>?): Set<MtgColor> = colors?.map { s -> parseColor(s) }?.toSet() ?: emptySet()
+fun parseColorsList(colors: List<String>?): Set<MtgColor> = colors?.map { it.toMtgColor() }?.toSet() ?: emptySet()
+
+fun MatchReport.Structure.toDatabase(): Long =
+    when(this) {
+        MatchReport.Structure.Bo1 -> 1
+        MatchReport.Structure.Bo3 -> 3
+    }
+
+fun GameResult.toDatabase(): Long =
+    when(this) {
+        GameResult.WON -> 1
+        GameResult.DRAW -> 0
+        GameResult.LOST -> -1
+    }
+
+fun MtgFormat.toDatabase(): String =
+    this.toString().lowercase()
+
+fun List<Card>.toDatabase(): List<Uuid> = this.map { it.id }

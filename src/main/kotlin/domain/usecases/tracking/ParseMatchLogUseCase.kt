@@ -50,12 +50,21 @@ class ParseMatchLogUseCase {
         val firstPlayerRegex = "@P(?<player>\\S+) chooses to play first".toRegex()
         val handSizeRegex = "@P(?<player>\\S+)( put.*)? begins the game with (?<handsize>[a-z]+) cards in hand".toRegex()
 
-        val games = log.split("wins the game").dropLast(1)
+        val games = log.split(Regex("wins the game|loses the game")).dropLast(1)
 
         return games.map { game ->
-            // The log ends with @P<player_name> wins the game. Since we splitted by "wins the game"
-            // the game log now ends with name of the winner.
-            val winner = game.substringAfterLast("@P").trim()
+            val outcome = Regex("@P(?<player>\\S+) (wins|loses) the game").find(log, log.indexOf(game))
+            val winner = if (outcome?.value?.contains("wins") == true) {
+                outcome.groups["player"]?.value ?: "Unknown"
+            } else {
+                // If it's a "loses" message, infer the winner based on the other player.
+                val loser = outcome?.groups?.get("player")?.value ?: "Unknown"
+                val otherPlayers = handSizeRegex.findAll(game)
+                    .map { it.groups["player"]?.value }
+                    .filterNot { it == loser }
+                    .toList()
+                otherPlayers.firstOrNull() ?: "Unknown"
+            }
 
             val firstPlayerMatch = firstPlayerRegex.find(game)
             val startingPlayer = firstPlayerMatch?.groups?.get("player")?.value ?: "Unknown"

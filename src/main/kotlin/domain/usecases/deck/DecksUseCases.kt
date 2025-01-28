@@ -6,4 +6,6 @@ data class DecksUseCases(
     val saveDeck: SaveDeckUseCase,
     val importDeck: ImportDeckUseCase,
     val deleteDeckUseCase: DeleteDeckUseCase,
+    val getSideboardingDataUseCase: GetSideboardingDataUseCase,
+    val getMatchingDeckUseCase: GetMatchingDeckUseCase,
 )
