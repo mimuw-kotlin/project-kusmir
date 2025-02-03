@@ -7,6 +7,7 @@ class SaveMatchReportUseCase(
     private val matchReportRepository: MatchReportRepository
 ) {
     suspend operator fun invoke(matchReport: MatchReport): MatchReport {
+        println("Saving match report")
        if (matchReport.id == -1L) {
            return matchReportRepository.createMatchReport(
                opponentName = matchReport.opponentName,
@@ -15,7 +16,9 @@ class SaveMatchReportUseCase(
                format = matchReport.format,
                registeredDeckId = matchReport.registeredDeckId,
                gameReports = matchReport.gameReports
-           )
+           ).also {
+               println("Created match report ${it.id}")
+           }
        } else {
            matchReportRepository.updateMatchReport(matchReport)
            return matchReport

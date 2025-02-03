@@ -95,8 +95,6 @@ class MatchReportDaoImpl(
             queries.selectMatchReportById(id).executeAsOneOrNull()
         }
 
-    override fun getGameReportsByMatchReportId(matchReportId: Long): Flow<List<GameReportDb>> =
-        queries.selectGameReportsByMatchId(matchReportId)
-            .asFlow()
-            .mapToList(Dispatchers.IO)
+    override fun getGameReportsByMatchReportId(matchReportId: Long): List<GameReportDb> =
+        queries.selectGameReportsByMatchId(matchReportId).executeAsList()
 }

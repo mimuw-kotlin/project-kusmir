@@ -25,7 +25,7 @@ fun CardDb.toDomain(): Card =
     )
 
 fun JsonObject.toDatabase(): CardDb? {
-    val id = this.get("oracle_id").asString.toUuid()
+    val id = this.get("oracle_id")?.asString?.toUuid() ?: return null
 
     // Some cards are not present in mtgo, but appear in paper game,
     // we simply ignore them.
@@ -111,7 +111,7 @@ fun String.toMtgColor(): MtgColor =
     }
 
 fun String.toMtgFormat(): MtgFormat =
-    when (this) {
+    when (this.trim().lowercase()) {
         "standard" -> MtgFormat.STANDARD
         "future" -> MtgFormat.FUTURE
         "historic" -> MtgFormat.HISTORIC

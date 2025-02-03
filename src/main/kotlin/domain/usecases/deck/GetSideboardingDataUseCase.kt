@@ -2,29 +2,43 @@ package domain.usecases.deck
 
 import domain.model.Card
 import domain.model.Deck
+import domain.model.DeckList
 
 class GetSideboardingDataUseCase {
     operator fun invoke(
         registeredDeck: Deck,
-        currentDeck: Deck,
+        currentSideboard: DeckList,
     ): Pair<List<Card>, List<Card>> {
-        val originalList = registeredDeck.mainDeck
-        val newList = currentDeck.mainDeck
+        /**
+         *  Returns list of cards that were added and removed from the maindeck
+         *  to achieve current sideboard state.
+         */
 
-        val added = newList.flatMap { (card, newCount) ->
-            val previousCount = originalList[card] ?: 0
-            List(newCount - previousCount) { card }
-                .takeIf { newCount > previousCount }
-                ?: emptyList()
+        val registeredSideboard = registeredDeck.sideboard
+        println("Get sideboarding data")
+        println("registered: $registeredSideboard")
+        println("current: $currentSideboard")
+
+        // Cards that are currently in sideboard, but were not there
+        // in the original list.
+        val removed = currentSideboard.flatMap { (card, newCount) ->
+            val previousCount = registeredSideboard[card] ?: 0
+            if (newCount > previousCount)
+                List(newCount - previousCount) { card }
+            else emptyList()
         }
 
-        val removed = originalList.flatMap { (card, originalCount) ->
-            val newCount = newList[card] ?: 0
-            List(originalCount - newCount) { card }
-                .takeIf { originalCount > newCount }
-                ?: emptyList()
+        // Cards that are missing from the sideboard, but were registered.
+        val added = registeredSideboard.flatMap { (card, previousCount) ->
+            val newCount = currentSideboard[card] ?: 0
+            if (previousCount > newCount)
+                List(previousCount - newCount) { card }
+            else
+                emptyList()
         }
 
+        println("added: $added")
+        println("removed: $removed")
         return added to removed
     }
 }

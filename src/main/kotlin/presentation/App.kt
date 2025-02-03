@@ -74,6 +74,7 @@ private fun MainWindowContent() {
         composable<Screen.Statistics> {
             StatisticsScreen(
                 navController = navController,
+                viewModel = koinViewModel(),
             )
         }
 

@@ -36,5 +36,5 @@ interface MatchReportDao {
 
     suspend fun getMatchReportById(id: Long): MatchReportDb?
 
-    fun getGameReportsByMatchReportId(matchReportId: Long): Flow<List<GameReportDb>>
+    fun getGameReportsByMatchReportId(matchReportId: Long): List<GameReportDb>
 }

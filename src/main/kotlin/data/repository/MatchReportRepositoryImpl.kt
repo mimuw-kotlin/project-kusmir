@@ -14,7 +14,6 @@ import domain.model.MatchReport
 import domain.model.MtgFormat
 import domain.repository.MatchReportRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.flow.map
 import java.util.*
 import kotlin.uuid.Uuid
@@ -57,11 +56,9 @@ class MatchReportRepositoryImpl(
             registeredDeckId = this.registeredDeckId,
             gameReports =
                 matchReportDao.getGameReportsByMatchReportId(this.id)
-                    .lastOrNull()
-                    ?.map {
+                    .map {
                         it.toDomain()
                     }
-                    ?: emptyList()
         )
     }
 

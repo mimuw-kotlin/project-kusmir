@@ -13,6 +13,7 @@ import data.source.CardsDao
 import domain.model.Card
 import domain.repository.CardsRepository
 import io.ktor.client.call.body
+import io.ktor.http.isSuccess
 import io.ktor.util.cio.writeChannel
 import io.ktor.utils.io.copyAndClose
 import kotlinx.coroutines.Dispatchers
@@ -42,6 +43,8 @@ class CardsRepositoryImpl(
             return card.toDomain()
         } else {
             val response = scryfallApi.fetchCardByMtgoId(mtgoId)
+            if (!response.status.isSuccess()) return null
+
             val stringBody: String = response.body()
             val cardDb = Gson().fromJson(stringBody, JsonObject::class.java).toDatabase()
             return cardDb

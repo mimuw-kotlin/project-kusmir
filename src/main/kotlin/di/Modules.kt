@@ -17,6 +17,7 @@ import data.source.DecksDao
 import data.source.DecksDaoImpl
 import data.sqldelight.CustomAdapters
 import data.sqldelight.CustomAdaptersImpl
+import presentation.statistics.StatisticsViewModel
 import domain.model.GameResult
 import domain.model.MatchReport
 import domain.model.MtgFormat
@@ -38,6 +39,7 @@ import domain.usecases.deck.GetMatchingDeckUseCase
 import domain.usecases.deck.GetSideboardingDataUseCase
 import domain.usecases.statistics.StatisticsUseCases
 import domain.usecases.statistics.SaveMatchReportUseCase
+import domain.usecases.statistics.GetAllMatchReportsUseCase
 import domain.usecases.tracking.ParseMatchLogUseCase
 import domain.usecases.tracking.ReadLogUseCase
 import domain.usecases.tracking.TrackingUseCases
@@ -120,6 +122,7 @@ val module =
 
         singleOf(::StatisticsUseCases)
         singleOf(::SaveMatchReportUseCase)
+        singleOf(::GetAllMatchReportsUseCase)
 
         // View models
         viewModel { (deckId: Long) -> EditDeckViewModel(get(), get(), deckId) }
@@ -127,6 +130,8 @@ val module =
         viewModelOf(::DecksViewModel)
 
         viewModelOf(::HomeViewModel)
+
+        viewModelOf(::StatisticsViewModel)
 
         // Yes, I know. It's not really a viewmodel.
         singleOf(::DeckTrackerViewModel)
