@@ -1,15 +1,22 @@
 [versions]
-agp = "8.2.2"
 kotlin = "2.0.20"
 coroutinesVersion = "1.7.3"
 dateTimeVersion = "0.6.0"
 koin = "3.5.3"
 koinComposeMultiplatform = "1.2.0-Beta4"
-ktor = "2.3.7"
+ktor = "3.0.3"
 sqldelight = "2.0.1"
 lifecycleViewmodelCompose = "2.7.0"
 navigationCompose = "2.8.0-alpha09"
 material3 = "1.3.0"
+kotlinx-uuid = "0.1.2"
+gson = "2.11.0"
+slf4j = "2.0.16"
+logback = "1.5.16"
+coil = "3.0.4"
+ktlint = "12.1.1"
+compose = "1.7.3"
+kotlin-plugin-compose = "2.1.20-Beta2"
 
 
 [libraries]
@@ -39,12 +46,25 @@ ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-apache = { module = "io.ktor:ktor-client-apache", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
+kotlinx-uuid-sqldelight = { module = "app.softwork:kotlinx-uuid-sqldelight", version.ref = "kotlinx-uuid"}
+kotlinx-uuid-core-jvm = { module = "app.softwork:kotlinx-uuid-core-jvm", version.ref = "kotlinx-uuid" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref="material3" }
 
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose"}
 
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesVersion" }
+
 [plugins]
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+compose = { id = "org.jetbrains.compose", version.ref = "compose" }
+kotlin-compose-plugin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin-plugin-compose" }
