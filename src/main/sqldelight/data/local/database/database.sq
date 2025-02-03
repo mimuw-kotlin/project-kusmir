@@ -198,7 +198,7 @@ INSERT OR REPLACE INTO 'cardDb' (
 
 ---CARD METADATA QUERIES
 insertCardMetadata:
-INSERT INTO 'cardMetadataDb' (key, value)
+INSERT OR REPLACE INTO 'cardMetadataDb' (key, value)
 VALUES (:key, :value);
 
 getCardMetadata:

@@ -43,7 +43,6 @@ fun StatisticsScreen(
     Scaffold(
         topBar = {
             CustomTopBar(
-                onBackPressed = { navController.navigateUp() },
                 onNavigate = { screen -> navController.navigate(screen) },
                 currentScreen = Screen.Statistics,
             )

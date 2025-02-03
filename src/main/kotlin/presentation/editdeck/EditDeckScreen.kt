@@ -49,7 +49,6 @@ fun EditDeckScreen(
     Scaffold(
         topBar = {
             CustomTopBar(
-                onBackPressed = { navController.navigateUp() },
                 onNavigate = { screen -> navController.navigate(screen) },
                 currentScreen = Screen.Decks,
             )
