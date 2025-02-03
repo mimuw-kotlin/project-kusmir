@@ -34,7 +34,6 @@ class CardsRepositoryFullDataTest {
         @JvmStatic
         fun setup() =
             runTest(timeout = 5.toDuration(DurationUnit.MINUTES)) {
-//            val driver = DatabaseDriverFactory().createDriver()
                 val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
                 Database.Schema.create(driver)
                 val db =
@@ -67,7 +66,7 @@ class CardsRepositoryFullDataTest {
                         scryfallApi = scryfallApi,
                     )
 
-                cardsRepository.fetchAndUpdateCardsData()
+                cardsRepository.fetchAndUpdateCardsData().collect {}
             }
     }
 

@@ -1,6 +1,7 @@
 package domain.repository
 
 import domain.model.Card
+import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
 import kotlin.uuid.Uuid
 
@@ -11,7 +12,10 @@ interface CardsRepository {
 
     suspend fun getCardByName(name: String): Card?
 
-    suspend fun fetchAndUpdateCardsData()
+    /**
+     *  @return StateFlow indicating download progress status.
+     */
+    fun fetchAndUpdateCardsData(): Flow<Float>
 
     suspend fun getCardsSearchResults(
         query: String,
