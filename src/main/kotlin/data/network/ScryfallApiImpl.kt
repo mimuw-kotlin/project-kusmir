@@ -1,13 +1,10 @@
 package data.network
 
-import app.softwork.uuid.toUuid
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import data.local.database.CardDb
-import data.repository.util.parseLegalityString
 import data.repository.util.toDatabase
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.engine.apache.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -102,7 +99,7 @@ class ScryfallApiImpl : ScryfallApi {
                     .get {
                         url(downloadUri)
                         method = HttpMethod.Get
-                    }.bodyAsChannel()
+                    }.bodyAsChannel(),
         )
     }
 }

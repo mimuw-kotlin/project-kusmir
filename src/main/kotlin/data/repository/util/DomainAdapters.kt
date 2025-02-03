@@ -137,7 +137,6 @@ fun String.toMtgFormat(): MtgFormat =
         else -> MtgFormat.UNKNOWN
     }
 
-
 fun parseLegalityString(legalityStr: String): Boolean =
     when (legalityStr) {
         "legal" -> true
@@ -150,19 +149,18 @@ fun parseLegalityString(legalityStr: String): Boolean =
 fun parseColorsList(colors: List<String>?): Set<MtgColor> = colors?.map { it.toMtgColor() }?.toSet() ?: emptySet()
 
 fun MatchReport.Structure.toDatabase(): Long =
-    when(this) {
+    when (this) {
         MatchReport.Structure.Bo1 -> 1
         MatchReport.Structure.Bo3 -> 3
     }
 
 fun GameResult.toDatabase(): Long =
-    when(this) {
+    when (this) {
         GameResult.WON -> 1
         GameResult.DRAW -> 0
         GameResult.LOST -> -1
     }
 
-fun MtgFormat.toDatabase(): String =
-    this.toString().lowercase()
+fun MtgFormat.toDatabase(): String = this.toString().lowercase()
 
 fun List<Card>.toDatabase(): List<Uuid> = this.map { it.id }

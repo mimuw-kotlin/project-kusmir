@@ -36,7 +36,7 @@ import presentation.statistics.components.PercentageCircle
 @Composable
 fun StatisticsScreen(
     navController: NavController,
-    viewModel: StatisticsViewModel = koinViewModel()
+    viewModel: StatisticsViewModel = koinViewModel(),
 ) {
     val state: StatisticsState by viewModel.state.collectAsState()
 
@@ -54,18 +54,19 @@ fun StatisticsScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(16.dp),
         ) {
             Column(
                 modifier = Modifier.weight(0.3f).fillMaxHeight(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-                val wonMatches = state.matchReports.filter { report ->
-                    val wonGames = report.gameReports.filter { it.result == GameResult.WON }.size
-                    val lostGames = report.gameReports.filter { it.result == GameResult.LOST }.size
-                    wonGames > lostGames
-                }
+                val wonMatches =
+                    state.matchReports.filter { report ->
+                        val wonGames = report.gameReports.filter { it.result == GameResult.WON }.size
+                        val lostGames = report.gameReports.filter { it.result == GameResult.LOST }.size
+                        wonGames > lostGames
+                    }
 
                 val winRatio =
                     if (state.matchReports.isEmpty()) {
@@ -85,7 +86,7 @@ fun StatisticsScreen(
                     text = "Recent games",
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.h5
+                    style = MaterialTheme.typography.h5,
                 )
                 HeaderRow()
                 LazyColumn {
@@ -113,9 +114,10 @@ fun HeaderRow() {
         listOf("Deck", "Date", "Format", "Structure", "Opponent", "Result").forEach { label ->
             Text(
                 text = label,
-                modifier = Modifier
-                    .weight(1f)
-                    .align(Alignment.CenterVertically),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .align(Alignment.CenterVertically),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
             )

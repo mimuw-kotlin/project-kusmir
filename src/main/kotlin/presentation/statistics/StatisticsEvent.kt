@@ -1,4 +1,3 @@
 package presentation.statistics
 
-class StatisticsEvent {
-}
+class StatisticsEvent

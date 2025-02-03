@@ -12,7 +12,7 @@ interface MatchReportDao {
         date: Long,
         structure: Long,
         format: String?,
-        registeredDeckId: Long
+        registeredDeckId: Long,
     ): Long
 
     // Creates a new GameReport entry and returns its id.

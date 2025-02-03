@@ -44,19 +44,21 @@ fun MatchReportItem(
     getDeckName: (Long) -> String,
 ) {
     Card(
-        modifier = Modifier
-            .padding(4.dp)
-            .fillMaxWidth()
-            .noRippleClickable { onClick() }
-            .animateContentSize(),
+        modifier =
+            Modifier
+                .padding(4.dp)
+                .fillMaxWidth()
+                .noRippleClickable { onClick() }
+                .animateContentSize(),
         border = BorderStroke(1.dp, Color.LightGray),
         shape = RoundedCornerShape(12.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .pointerHoverIcon(PointerIcon.Hand)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .pointerHoverIcon(PointerIcon.Hand),
             ) {
                 listOf(
                     getDeckName(matchReport.registeredDeckId),
@@ -67,9 +69,10 @@ fun MatchReportItem(
                 ).forEach { text ->
                     Text(
                         text = text.ifBlank { "???" },
-                        modifier = Modifier
-                            .weight(1f)
-                            .align(Alignment.CenterVertically),
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .align(Alignment.CenterVertically),
                         textAlign = TextAlign.Center,
                     )
                 }
@@ -78,16 +81,19 @@ fun MatchReportItem(
                 val lostGames = matchReport.gameReports.filter { it.result == GameResult.LOST }.size
                 Text(
                     text = "$wonGames - $lostGames",
-                    modifier = Modifier
-                        .weight(1f)
-                        .align(Alignment.CenterVertically),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .align(Alignment.CenterVertically),
                     textAlign = TextAlign.Center,
                     color =
-                    if (wonGames > lostGames) {
-                        Color.Green
-                    } else if (wonGames < lostGames) {
-                        Color.Red
-                    } else Color.Gray
+                        if (wonGames > lostGames) {
+                            Color.Green
+                        } else if (wonGames < lostGames) {
+                            Color.Red
+                        } else {
+                            Color.Gray
+                        },
                 )
             }
 
@@ -107,7 +113,7 @@ fun GameReportTabs(gameReports: List<GameReport>) {
         RowSwitch(
             selectedIndex = selectedIndex,
             items = (1..gameReports.size).map { "Game $it" },
-            onSelectionChange = { selectedIndex = it},
+            onSelectionChange = { selectedIndex = it },
         )
 
         Spacer(modifier = Modifier.height(8.dp))

@@ -1,7 +1,6 @@
 package di
 
 import MatchReportDaoImpl
-import app.cash.sqldelight.ColumnAdapter
 import app.softwork.uuid.sqldelight.UuidByteArrayAdapter
 import data.local.database.CardDb
 import data.local.database.Card_deck
@@ -11,16 +10,13 @@ import data.network.ScryfallApi
 import data.network.ScryfallApiImpl
 import data.repository.CardsRepositoryImpl
 import data.repository.DeckRepositoryImpl
+import data.repository.MatchReportRepositoryImpl
 import data.source.CardsDao
 import data.source.CardsDaoImpl
 import data.source.DecksDao
 import data.source.DecksDaoImpl
-import data.sqldelight.CustomAdapters
+import data.source.MatchReportDao
 import data.sqldelight.CustomAdaptersImpl
-import presentation.statistics.StatisticsViewModel
-import domain.model.GameResult
-import domain.model.MatchReport
-import domain.model.MtgFormat
 import domain.repository.CardsRepository
 import domain.repository.DecksRepository
 import domain.repository.MatchReportRepository
@@ -33,18 +29,16 @@ import domain.usecases.deck.DecksUseCases
 import domain.usecases.deck.DeleteDeckUseCase
 import domain.usecases.deck.GetAllDecksUseCase
 import domain.usecases.deck.GetDeckUseCase
-import domain.usecases.deck.ImportDeckUseCase
-import domain.usecases.deck.SaveDeckUseCase
 import domain.usecases.deck.GetMatchingDeckUseCase
 import domain.usecases.deck.GetSideboardingDataUseCase
-import domain.usecases.statistics.StatisticsUseCases
-import domain.usecases.statistics.SaveMatchReportUseCase
+import domain.usecases.deck.ImportDeckUseCase
+import domain.usecases.deck.SaveDeckUseCase
 import domain.usecases.statistics.GetAllMatchReportsUseCase
+import domain.usecases.statistics.SaveMatchReportUseCase
+import domain.usecases.statistics.StatisticsUseCases
 import domain.usecases.tracking.ParseMatchLogUseCase
 import domain.usecases.tracking.ReadLogUseCase
 import domain.usecases.tracking.TrackingUseCases
-import data.repository.MatchReportRepositoryImpl
-import data.source.MatchReportDao
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.koin.compose.viewmodel.dsl.viewModel
@@ -58,6 +52,7 @@ import presentation.decks.DecksViewModel
 import presentation.decktracker.DeckTrackerViewModel
 import presentation.editdeck.EditDeckViewModel
 import presentation.home.HomeViewModel
+import presentation.statistics.StatisticsViewModel
 import util.DatabaseDriverFactory
 
 val module =
@@ -83,7 +78,7 @@ val module =
                         playerDrawnCardsIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
                         cardsSidedInIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
                         cardsSidedOutIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
-                    )
+                    ),
             )
         }
 

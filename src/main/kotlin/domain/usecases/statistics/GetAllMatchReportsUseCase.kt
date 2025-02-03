@@ -5,8 +5,7 @@ import domain.repository.MatchReportRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetAllMatchReportsUseCase(
-    private val repository: MatchReportRepository
+    private val repository: MatchReportRepository,
 ) {
-    operator fun invoke(): Flow<List<MatchReport>> =
-        repository.getAll()
+    operator fun invoke(): Flow<List<MatchReport>> = repository.getAll()
 }

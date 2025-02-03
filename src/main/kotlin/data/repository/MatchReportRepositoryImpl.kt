@@ -21,18 +21,19 @@ import kotlin.uuid.Uuid
 class MatchReportRepositoryImpl(
     private val matchReportDao: MatchReportDao,
     private val cardsDao: CardsDao,
-): MatchReportRepository {
+) : MatchReportRepository {
     private suspend fun List<Uuid>.toCardsList(): List<Card> =
-        this.map { cardsDao.getById(it)?.toDomain() ?: error("Card with id $it does not exist.")}
+        this.map { cardsDao.getById(it)?.toDomain() ?: error("Card with id $it does not exist.") }
 
     private suspend fun GameReportDb.toDomain(): GameReport =
         GameReport(
-            result = when (this.result) {
-                -1L -> GameResult.LOST
-                0L  -> GameResult.DRAW
-                1L  -> GameResult.WON
-                else -> error("Invalid result value ${this.result}")
-            },
+            result =
+                when (this.result) {
+                    -1L -> GameResult.LOST
+                    0L -> GameResult.DRAW
+                    1L -> GameResult.WON
+                    else -> error("Invalid result value ${this.result}")
+                },
             isOnThePlay = this.isOnThePlay,
             opponentRevealedCards = this.opponentRevealedCardsIds.toCardsList(),
             playerDrawnCards = this.playerDrawnCardsIds.toCardsList(),
@@ -47,18 +48,19 @@ class MatchReportRepositoryImpl(
             id = this.id,
             opponentName = this.opponentName,
             date = Date(this.date),
-            structure = when (this.structure) {
-                1L -> MatchReport.Structure.Bo1
-                3L -> MatchReport.Structure.Bo3
-                else -> error(IllegalStateException("DB structure value ${this.structure} is invalid"))
-            },
+            structure =
+                when (this.structure) {
+                    1L -> MatchReport.Structure.Bo1
+                    3L -> MatchReport.Structure.Bo3
+                    else -> error(IllegalStateException("DB structure value ${this.structure} is invalid"))
+                },
             format = this.format?.toMtgFormat() ?: MtgFormat.UNKNOWN,
             registeredDeckId = this.registeredDeckId,
             gameReports =
                 matchReportDao.getGameReportsByMatchReportId(this.id)
                     .map {
                         it.toDomain()
-                    }
+                    },
         )
     }
 
@@ -68,15 +70,16 @@ class MatchReportRepositoryImpl(
         structure: MatchReport.Structure,
         format: MtgFormat,
         registeredDeckId: Long,
-        gameReports: List<GameReport>
+        gameReports: List<GameReport>,
     ): MatchReport {
-        val reportId = matchReportDao.createMatchReport(
-            opponentName = opponentName,
-            structure = structure.toDatabase(),
-            date = date.toInstant().toEpochMilli(),
-            format = format.toString(),
-            registeredDeckId = registeredDeckId,
-        )
+        val reportId =
+            matchReportDao.createMatchReport(
+                opponentName = opponentName,
+                structure = structure.toDatabase(),
+                date = date.toInstant().toEpochMilli(),
+                format = format.toString(),
+                registeredDeckId = registeredDeckId,
+            )
 
         gameReports.forEach {
             matchReportDao.createGameReport(
@@ -113,12 +116,11 @@ class MatchReportRepositoryImpl(
                     structure = this.structure.toDatabase(),
                     format = this.format.toDatabase(),
                     registeredDeckId = this.registeredDeckId,
-                )
+                ),
             )
         }
 
-    override suspend fun getById(id: Long): MatchReport? =
-        matchReportDao.getMatchReportById(id)?.toDomain()
+    override suspend fun getById(id: Long): MatchReport? = matchReportDao.getMatchReportById(id)?.toDomain()
 
     override fun getAll(): Flow<List<MatchReport>> =
         matchReportDao.getAllMatchReports().map { matchReports ->

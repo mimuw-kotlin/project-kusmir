@@ -35,8 +35,7 @@ class DecksDaoImpl(
         }
     }
 
-    override fun getAllDecks(): Flow<List<DeckDb>> =
-        queries.getAllDecks().asFlow().mapToList(Dispatchers.IO)
+    override fun getAllDecks(): Flow<List<DeckDb>> = queries.getAllDecks().asFlow().mapToList(Dispatchers.IO)
 
     override suspend fun getDeckById(id: Long): DeckDb? =
         withContext(Dispatchers.IO) {

@@ -27,8 +27,7 @@ private data class GameInfo(
     val opponentCards: List<Card> = emptyList(),
 )
 
-private fun List<GameInfo>.copy() =
-    this.map { it.copy() }
+private fun List<GameInfo>.copy() = this.map { it.copy() }
 
 private data class MatchInfo(
     var matchId: Long? = null,
@@ -40,7 +39,7 @@ private data class MatchInfo(
 class DeckTrackerViewModel(
     private val trackingUseCases: TrackingUseCases,
     private val decksUseCases: DecksUseCases,
-    private val statisticsUseCases: StatisticsUseCases
+    private val statisticsUseCases: StatisticsUseCases,
 ) {
     private val _state = MutableStateFlow(DeckTrackerState())
     val state: StateFlow<DeckTrackerState> = _state
@@ -54,7 +53,6 @@ class DeckTrackerViewModel(
     private var currentMatchToken: Uuid? = null
     private var currentGameId: Long? = null
     private var playerName: String? = null
-
 
     init {
         val logEventFlow = trackingUseCases.readLog()
@@ -88,8 +86,9 @@ class DeckTrackerViewModel(
                     currentGameId = event.gameId
 
                     gamesInfo.add(GameInfo())
-                    if (matchInfo.registeredDeck == null)
+                    if (matchInfo.registeredDeck == null) {
                         matchInfo.registeredDeck = event.registeredDeck
+                    }
                 }
 
                 _state.value =
@@ -108,7 +107,7 @@ class DeckTrackerViewModel(
                     gamesInfo[gamesInfo.lastIndex].copy(
                         playerCards = event.cards[playerName].orEmpty(),
                         opponentCards = event.cards[matchInfo.opponentName].orEmpty(),
-                        sideboard = gamesInfo.last().sideboard ?: event.sideboard
+                        sideboard = gamesInfo.last().sideboard ?: event.sideboard,
                     )
 
                 _state.value =
@@ -199,8 +198,10 @@ class DeckTrackerViewModel(
                 )
             }
 
-        val registeredDeck = decksUseCases.getMatchingDeckUseCase(
-            matchInfo.registeredDeck ?: Deck.emptyDeck())
+        val registeredDeck =
+            decksUseCases.getMatchingDeckUseCase(
+                matchInfo.registeredDeck ?: Deck.emptyDeck(),
+            )
 
         statisticsUseCases.saveMatchReport(
             MatchReport(
@@ -210,8 +211,8 @@ class DeckTrackerViewModel(
                 structure = if (gameReports.size == 1) MatchReport.Structure.Bo1 else MatchReport.Structure.Bo3,
                 format = matchInfo.format ?: MtgFormat.UNKNOWN,
                 registeredDeckId = registeredDeck.id,
-                gameReports = gameReports
-            )
+                gameReports = gameReports,
+            ),
         )
     }
 }

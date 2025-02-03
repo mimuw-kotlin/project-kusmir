@@ -40,5 +40,4 @@ class CustomAdaptersImpl : CustomAdapters {
                 return value.joinToString(",") { it.toString() } // Join Uuids into a comma-separated string
             }
         }
-
 }

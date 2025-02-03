@@ -13,7 +13,7 @@ interface MatchReportRepository {
         structure: MatchReport.Structure,
         format: MtgFormat,
         registeredDeckId: Long,
-        gameReports: List<GameReport>
+        gameReports: List<GameReport>,
     ): MatchReport
 
     suspend fun updateMatchReport(matchReport: MatchReport)

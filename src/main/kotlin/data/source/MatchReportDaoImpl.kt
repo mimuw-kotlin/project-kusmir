@@ -11,7 +11,7 @@ import kotlin.uuid.Uuid
 
 class MatchReportDaoImpl(
     private val db: Database,
-): MatchReportDao {
+) : MatchReportDao {
     private val queries = db.databaseQueries
 
     override suspend fun createMatchReport(
@@ -19,7 +19,7 @@ class MatchReportDaoImpl(
         date: Long,
         structure: Long,
         format: String?,
-        registeredDeckId: Long
+        registeredDeckId: Long,
     ): Long =
         withContext(Dispatchers.IO) {
             queries.transactionWithResult {
@@ -29,7 +29,7 @@ class MatchReportDaoImpl(
                     date = date,
                     structure = structure,
                     format = format,
-                    registeredDeckId = registeredDeckId
+                    registeredDeckId = registeredDeckId,
                 )
                 queries.getLastInsertedId().executeAsOne()
             }

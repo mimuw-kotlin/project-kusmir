@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.onEach
 class StatisticsViewModel(
     private val decksUseCases: DecksUseCases,
     private val statisticsUseCases: StatisticsUseCases,
-): ViewModel() {
+) : ViewModel() {
     private val _state = MutableStateFlow(StatisticsState())
     val state: StateFlow<StatisticsState> = _state
 
@@ -20,21 +20,18 @@ class StatisticsViewModel(
         decksUseCases
             .getAllDecks()
             .onEach { decks ->
-                println(decks)
                 _state.value =
                     state.value.copy(
-                        decks = decks.sortedBy { it.name }
+                        decks = decks.sortedBy { it.name },
                     )
             }.launchIn(viewModelScope)
 
         statisticsUseCases
             .getAllMatchReports()
             .onEach { reports ->
-                println(reports)
-                println(reports)
                 _state.value =
                     state.value.copy(
-                        matchReports = reports.sortedByDescending { it.date }
+                        matchReports = reports.sortedByDescending { it.date },
                     )
             }.launchIn(viewModelScope)
     }

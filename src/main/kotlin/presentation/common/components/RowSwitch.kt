@@ -59,11 +59,11 @@ fun RowSwitch(
             if (items.size > 1) {
                 Box(
                     modifier =
-                    Modifier
-                        .offset(x = indicatorOffset)
-                        .shadow(4.dp, RoundedCornerShape(8.dp))
-                        .width(tabWidth)
-                        .fillMaxHeight(),
+                        Modifier
+                            .offset(x = indicatorOffset)
+                            .shadow(4.dp, RoundedCornerShape(8.dp))
+                            .width(tabWidth)
+                            .fillMaxHeight(),
                 )
             }
 

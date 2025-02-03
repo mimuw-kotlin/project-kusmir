@@ -21,21 +21,26 @@ class GetSideboardingDataUseCase {
 
         // Cards that are currently in sideboard, but were not there
         // in the original list.
-        val removed = currentSideboard.flatMap { (card, newCount) ->
-            val previousCount = registeredSideboard[card] ?: 0
-            if (newCount > previousCount)
-                List(newCount - previousCount) { card }
-            else emptyList()
-        }
+        val removed =
+            currentSideboard.flatMap { (card, newCount) ->
+                val previousCount = registeredSideboard[card] ?: 0
+                if (newCount > previousCount) {
+                    List(newCount - previousCount) { card }
+                } else {
+                    emptyList()
+                }
+            }
 
         // Cards that are missing from the sideboard, but were registered.
-        val added = registeredSideboard.flatMap { (card, previousCount) ->
-            val newCount = currentSideboard[card] ?: 0
-            if (previousCount > newCount)
-                List(previousCount - newCount) { card }
-            else
-                emptyList()
-        }
+        val added =
+            registeredSideboard.flatMap { (card, previousCount) ->
+                val newCount = currentSideboard[card] ?: 0
+                if (previousCount > newCount) {
+                    List(previousCount - newCount) { card }
+                } else {
+                    emptyList()
+                }
+            }
 
         println("added: $added")
         println("removed: $removed")

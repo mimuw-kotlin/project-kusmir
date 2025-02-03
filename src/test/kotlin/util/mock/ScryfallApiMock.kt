@@ -4,7 +4,6 @@ package util.mock
 
 import data.local.database.CardDb
 import data.network.ScryfallApi
-import io.ktor.client.statement.HttpResponse
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -41,7 +40,7 @@ class ScryfallApiMock(
         val file = File(filePath)
         return ScryfallApi.BulkData(
             size = file.length().toInt(),
-            content = file.readChannel()
+            content = file.readChannel(),
         )
     }
 

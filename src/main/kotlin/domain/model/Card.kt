@@ -12,6 +12,7 @@ data class Card(
     val imageSource: String,
     val cropImageSource: String,
 ) {
+    // Same cards may have different images, that's why we want to compare only by id.
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Card) return false

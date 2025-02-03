@@ -9,7 +9,7 @@ data class MatchReport(
     val structure: Structure,
     val format: MtgFormat,
     val registeredDeckId: Long,
-    val gameReports: List<GameReport>
+    val gameReports: List<GameReport>,
 ) {
     enum class Structure {
         Bo1,

@@ -43,7 +43,7 @@ data class ParsedGameResult(
 class ParseMatchLogUseCase {
     operator fun invoke(
         // By default, look for the most recent MatchLog file.
-        logFile: File = getMatchLogFile()
+        logFile: File = getMatchLogFile(),
     ): List<ParsedGameResult> {
         val log = logFile.readText()
 
@@ -54,17 +54,19 @@ class ParseMatchLogUseCase {
 
         return games.map { game ->
             val outcome = Regex("@P(?<player>\\S+) (wins|loses) the game").find(log, log.indexOf(game))
-            val winner = if (outcome?.value?.contains("wins") == true) {
-                outcome.groups["player"]?.value ?: "Unknown"
-            } else {
-                // If it's a "loses" message, infer the winner based on the other player.
-                val loser = outcome?.groups?.get("player")?.value ?: "Unknown"
-                val otherPlayers = handSizeRegex.findAll(game)
-                    .map { it.groups["player"]?.value }
-                    .filterNot { it == loser }
-                    .toList()
-                otherPlayers.firstOrNull() ?: "Unknown"
-            }
+            val winner =
+                if (outcome?.value?.contains("wins") == true) {
+                    outcome.groups["player"]?.value ?: "Unknown"
+                } else {
+                    // If it's a "loses" message, infer the winner based on the other player.
+                    val loser = outcome?.groups?.get("player")?.value ?: "Unknown"
+                    val otherPlayers =
+                        handSizeRegex.findAll(game)
+                            .map { it.groups["player"]?.value }
+                            .filterNot { it == loser }
+                            .toList()
+                    otherPlayers.firstOrNull() ?: "Unknown"
+                }
 
             val firstPlayerMatch = firstPlayerRegex.find(game)
             val startingPlayer = firstPlayerMatch?.groups?.get("player")?.value ?: "Unknown"

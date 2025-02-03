@@ -99,10 +99,12 @@ data class Deck(
     val sideboard: DeckList,
 ) {
     enum class ListType { MainDeck, Sideboard }
+
     companion object {
-        fun emptyDeck() = Deck(
-            mainDeck = DeckList(),
-            sideboard = DeckList()
-        )
+        fun emptyDeck() =
+            Deck(
+                mainDeck = DeckList(),
+                sideboard = DeckList(),
+            )
     }
 }

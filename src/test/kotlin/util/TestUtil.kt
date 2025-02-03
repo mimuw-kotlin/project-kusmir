@@ -31,12 +31,12 @@ internal fun mockCardDatabase(): Database {
                 cardIdAdapter = UuidByteArrayAdapter,
             ),
         gameReportDbAdapter =
-        GameReportDb.Adapter(
-            opponentRevealedCardsIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
-            playerDrawnCardsIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
-            cardsSidedInIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
-            cardsSidedOutIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
-        )
+            GameReportDb.Adapter(
+                opponentRevealedCardsIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+                playerDrawnCardsIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+                cardsSidedInIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+                cardsSidedOutIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+            ),
     )
 }
 

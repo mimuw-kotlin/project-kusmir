@@ -26,26 +26,31 @@ fun PercentageCircle(percentage: Float) {
     var animatedPercentage by remember { mutableStateOf(0f) }
     var animatedSweepAngle by remember { mutableStateOf(0f) }
 
-    val animatedValue = animateFloatAsState(
-        targetValue = animatedPercentage,
-        animationSpec = tween(durationMillis = 1000), label = "Animated Percentage"
-    )
+    val animatedValue =
+        animateFloatAsState(
+            targetValue = animatedPercentage,
+            animationSpec = tween(durationMillis = 1000),
+            label = "Animated Percentage",
+        )
 
-    val animatedAngle = animateFloatAsState(
-        targetValue = animatedSweepAngle,
-        animationSpec = tween(durationMillis = 1000), label = "Animated Sweep Angle"
-    )
+    val animatedAngle =
+        animateFloatAsState(
+            targetValue = animatedSweepAngle,
+            animationSpec = tween(durationMillis = 1000),
+            label = "Animated Sweep Angle",
+        )
 
     LaunchedEffect(percentage) {
         animatedPercentage = percentage
         animatedSweepAngle = percentage * 360
     }
 
-    val color = Color(
-        red = (255 * (1 - animatedValue.value)).roundToInt(),
-        green = 255,
-        blue = 0,
-    )
+    val color =
+        Color(
+            red = (255 * (1 - animatedValue.value)).roundToInt(),
+            green = 255,
+            blue = 0,
+        )
 
     Box(contentAlignment = Alignment.Center, modifier = Modifier.size(100.dp)) {
         Canvas(modifier = Modifier.size(350.dp)) {
@@ -54,7 +59,7 @@ fun PercentageCircle(percentage: Float) {
                 startAngle = -90f,
                 sweepAngle = animatedAngle.value,
                 useCenter = false,
-                style = Stroke(width = 8.dp.toPx(), cap = StrokeCap.Round)
+                style = Stroke(width = 8.dp.toPx(), cap = StrokeCap.Round),
             )
         }
         val percentageInt = (animatedValue.value * 100).roundToInt()

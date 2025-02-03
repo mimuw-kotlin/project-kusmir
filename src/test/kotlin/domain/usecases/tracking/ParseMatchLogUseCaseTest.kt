@@ -28,30 +28,34 @@ class ParseMatchLogUseCaseTest {
         val playerOne = "Kusmir"
         val playerTwo = "Legndary_PlaneSmoker"
 
-        val expected = listOf(
-            ParsedGameResult(
-                winner = playerTwo,
-                startingPlayer = playerTwo,
-                handSizes = mapOf(
-                    playerOne to 7,
-                    playerTwo to 7
-                ).toSortedMap()
-            ),
-            ParsedGameResult(
-                winner = playerTwo,
-                startingPlayer = playerOne,
-                handSizes = mapOf(
-                    playerOne to 7,
-                    playerTwo to 6
-                ).toSortedMap()
+        val expected =
+            listOf(
+                ParsedGameResult(
+                    winner = playerTwo,
+                    startingPlayer = playerTwo,
+                    handSizes =
+                        mapOf(
+                            playerOne to 7,
+                            playerTwo to 7,
+                        ).toSortedMap(),
+                ),
+                ParsedGameResult(
+                    winner = playerTwo,
+                    startingPlayer = playerOne,
+                    handSizes =
+                        mapOf(
+                            playerOne to 7,
+                            playerTwo to 6,
+                        ).toSortedMap(),
+                ),
             )
-        )
 
-        val results = runBlocking {
-            trackingUseCases.parseMatchLog(logFile).map { result ->
-                result.copy(handSizes = result.handSizes.toSortedMap())
+        val results =
+            runBlocking {
+                trackingUseCases.parseMatchLog(logFile).map { result ->
+                    result.copy(handSizes = result.handSizes.toSortedMap())
+                }
             }
-        }
 
         assertEquals(expected, results)
     }

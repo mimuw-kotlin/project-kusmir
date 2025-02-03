@@ -21,7 +21,6 @@ import java.io.File
 import java.io.RandomAccessFile
 import kotlin.uuid.Uuid
 
-
 class LogParser(
     private val cardsRepository: CardsRepository,
 ) {
@@ -30,7 +29,7 @@ class LogParser(
             val matchId: Long,
             val matchToken: Uuid,
             val format: MtgFormat,
-        ): Event()
+        ) : Event()
 
         data class GameStarted(
             val gameId: Long,
@@ -86,18 +85,20 @@ class LogParser(
     @Serializable
     data class GameState(
         @SerialName("Players") val players: List<PlayerInfo>,
-        @SerialName("Cards") val cards: List<GameStateCard>
+        @SerialName("Cards") val cards: List<GameStateCard>,
     )
 
     private suspend fun processGameStarted(message: String): Event.GameStarted {
         val headerInfoRegex = "Username: (?<playerName>\\S+) Deck Used in Game ID: (?<gameId>\\d+)".toRegex()
         val headerInfo = headerInfoRegex.find(message)
 
-        val gameId = headerInfo?.groups?.get("gameId")?.value?.toLong()
-            ?: error("Invalid GameStarted message syntax in:\n$message")
+        val gameId =
+            headerInfo?.groups?.get("gameId")?.value?.toLong()
+                ?: error("Invalid GameStarted message syntax in:\n$message")
 
-        val playerName = headerInfo.groups.get("playerName")?.value
-            ?: error("Invalid GameStarted message syntax in:\n$message")
+        val playerName =
+            headerInfo.groups.get("playerName")?.value
+                ?: error("Invalid GameStarted message syntax in:\n$message")
 
         val mainDeck = MutableDeckList()
         val sideboard = MutableDeckList()
@@ -146,19 +147,21 @@ class LogParser(
 
         val (mainCards, sideboardCards) = gameState.cards.partition { it.zone != "Sideboard" }
 
-        val seenCards = mainCards
-            .groupBy { it.owner }
-            .mapKeys { (id, _) ->
-                gameState.players.find { it.id == id }!!.name
-            }
-            .mapValues { (_, cards) ->
-                cards
-                    .mapNotNull { cardsRepository.getCardByMtgoId(it.mtgoId) }
-            }
+        val seenCards =
+            mainCards
+                .groupBy { it.owner }
+                .mapKeys { (id, _) ->
+                    gameState.players.find { it.id == id }!!.name
+                }
+                .mapValues { (_, cards) ->
+                    cards
+                        .mapNotNull { cardsRepository.getCardByMtgoId(it.mtgoId) }
+                }
 
         // We don't group sideboard cards, because only player sideboard i visible anyway.
-        val sideboard = sideboardCards
-            .mapNotNull { cardsRepository.getCardByMtgoId(it.mtgoId) }
+        val sideboard =
+            sideboardCards
+                .mapNotNull { cardsRepository.getCardByMtgoId(it.mtgoId) }
 
         val playersNames = gameState.players.map { it.name }
 
@@ -175,16 +178,19 @@ class LogParser(
     private fun processMatchStarted(message: String): Event.MatchStarted {
         val uuidRegex = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}".toRegex()
         val matchTokenRegex = "Match Token:(?<matchToken>$uuidRegex)".toRegex()
-        val matchToken = matchTokenRegex.find(message)?.groups?.get("matchToken")?.value?.toUuid()
-            ?: error("Invalid MatchStarted message syntax in:\n$message")
+        val matchToken =
+            matchTokenRegex.find(message)?.groups?.get("matchToken")?.value?.toUuid()
+                ?: error("Invalid MatchStarted message syntax in:\n$message")
 
         val matchIdRegex = "Match Id:(?<matchId>\\d+)".toRegex()
-        val matchId = matchIdRegex.find(message)?.groups?.get("matchId")?.value?.toLong()
-            ?: error("Invalid MatchStarted message syntax in:\n$message")
+        val matchId =
+            matchIdRegex.find(message)?.groups?.get("matchId")?.value?.toLong()
+                ?: error("Invalid MatchStarted message syntax in:\n$message")
 
         val matchFormatRegex = "GameStructureCd= (?<matchFormat>\\S+)".toRegex()
-        val matchFormat = matchFormatRegex.find(message)?.groups?.get("matchFormat")?.value?.toMtgFormat()
-            ?: error("Invalid MatchStarted message syntax in:\n$message")
+        val matchFormat =
+            matchFormatRegex.find(message)?.groups?.get("matchFormat")?.value?.toMtgFormat()
+                ?: error("Invalid MatchStarted message syntax in:\n$message")
 
         return Event.MatchStarted(
             matchId = matchId,
@@ -195,8 +201,9 @@ class LogParser(
 
     private fun processMatchFinished(message: String): Event.MatchFinished {
         val uuidRegex = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}".toRegex()
-        val token = uuidRegex.find(message)?.value?.toUuid()
-            ?: error("Invalid GameStarted message syntax in:\n$message")
+        val token =
+            uuidRegex.find(message)?.value?.toUuid()
+                ?: error("Invalid GameStarted message syntax in:\n$message")
 
         return Event.MatchFinished(
             token = token,

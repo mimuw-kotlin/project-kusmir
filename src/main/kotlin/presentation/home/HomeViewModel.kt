@@ -33,9 +33,10 @@ class HomeViewModel(
                     _state.value = _state.value.copy(isLoadingCards = true)
 
                     progressFlow.collect { progress ->
-                        _state.value = state.value.copy(
-                            downloadProgress = progress
-                        )
+                        _state.value =
+                            state.value.copy(
+                                downloadProgress = progress,
+                            )
                     }
 
                     val currentTime =
