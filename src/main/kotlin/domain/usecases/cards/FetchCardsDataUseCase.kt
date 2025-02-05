@@ -1,11 +1,10 @@
 package domain.usecases.cards
 
 import domain.repository.CardsRepository
+import kotlinx.coroutines.flow.Flow
 
 class FetchCardsDataUseCase(
     private val repository: CardsRepository,
 ) {
-    suspend operator fun invoke() {
-        repository.fetchAndUpdateCardsData()
-    }
+    operator fun invoke(): Flow<Float> = repository.fetchAndUpdateCardsData()
 }

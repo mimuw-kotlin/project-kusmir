@@ -28,7 +28,7 @@ class CardsRepositoryTest {
             )
 
         runBlocking {
-            cardsRepository.fetchAndUpdateCardsData()
+            cardsRepository.fetchAndUpdateCardsData().collect {}
         }
     }
 

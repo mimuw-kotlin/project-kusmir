@@ -2,8 +2,8 @@
 
 package util.mock
 
+import data.local.database.CardDb
 import data.network.ScryfallApi
-import io.ktor.client.statement.HttpResponse
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.runBlocking
 import java.io.File
@@ -18,19 +18,19 @@ import java.io.File
 class ScryfallApiMock(
     private val bulkFileName: String,
 ) : ScryfallApi {
-    override suspend fun fetchCardById(id: String): HttpResponse {
+    override suspend fun fetchCardById(id: String): CardDb? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun fetchCardByName(name: String): HttpResponse {
+    override suspend fun fetchCardByMtgoId(mtgoId: Long): CardDb? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun fetchBulkData(type: String): HttpResponse {
+    override suspend fun fetchCardByName(name: String): CardDb? {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getCardsChannel(type: String): ByteReadChannel {
+    override suspend fun fetchBulkData(type: String): ScryfallApi.BulkData {
         val filePath =
             javaClass.classLoader
                 .getResource(bulkFileName)
@@ -38,7 +38,10 @@ class ScryfallApiMock(
                 ?: throw IllegalArgumentException("$bulkFileName not found")
 
         val file = File(filePath)
-        return file.readChannel()
+        return ScryfallApi.BulkData(
+            size = file.length().toInt(),
+            content = file.readChannel(),
+        )
     }
 
     private fun File.readChannel(): ByteReadChannel =

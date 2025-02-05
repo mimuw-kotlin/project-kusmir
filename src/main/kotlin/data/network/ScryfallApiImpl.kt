@@ -2,6 +2,8 @@ package data.network
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import data.local.database.CardDb
+import data.repository.util.toDatabase
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.*
 import io.ktor.client.plugins.*
@@ -53,32 +55,51 @@ class ScryfallApiImpl : ScryfallApi {
             lastCallTime = System.currentTimeMillis()
         }
 
-        return httpClient.get(url)
+        val response = httpClient.get(url)
+        if (!response.status.isSuccess()) {
+            throw ResponseException(response, "HTTP error: ${response.status}")
+        }
+        return response
     }
 
-    override suspend fun fetchCardById(id: String): HttpResponse {
+    override suspend fun fetchCardById(id: String): CardDb? {
         val requestUrl = "$BASE_URL/cards/$id"
-        return performApiCallWithDelay(requestUrl)
+        val response = performApiCallWithDelay(requestUrl)
+
+        return Gson().fromJson(response.bodyAsText(), JsonObject::class.java).toDatabase()
     }
 
-    override suspend fun fetchCardByName(name: String): HttpResponse {
+    override suspend fun fetchCardByMtgoId(mtgoId: Long): CardDb? {
+        val requestUrl = "$BASE_URL/cards/mtgo/$mtgoId"
+        val response = performApiCallWithDelay(requestUrl)
+
+        return Gson().fromJson(response.bodyAsText(), JsonObject::class.java).toDatabase()
+    }
+
+    override suspend fun fetchCardByName(name: String): CardDb? {
         val requestUrl = "$BASE_URL/cards/named?exact=$name".replace(" ", "%20")
-        return performApiCallWithDelay(requestUrl)
+        val response = performApiCallWithDelay(requestUrl)
+
+        return Gson().fromJson(response.bodyAsText(), JsonObject::class.java).toDatabase()
     }
 
-    override suspend fun fetchBulkData(type: String): HttpResponse {
+    override suspend fun fetchBulkData(type: String): ScryfallApi.BulkData {
         val requestUrl = "$BASE_URL/bulk-data/$type"
-        return performApiCallWithDelay(requestUrl)
-    }
+        val response = performApiCallWithDelay(requestUrl)
 
-    override suspend fun getCardsChannel(type: String): ByteReadChannel {
-        val url =
-            Gson().fromJson(fetchBulkData(type).bodyAsText(), JsonObject::class.java)
-                .get("download_uri").asString
+        val json = Gson().fromJson(response.bodyAsText(), JsonObject::class.java)
 
-        return httpClient.get {
-            url(url)
-            method = HttpMethod.Get
-        }.bodyAsChannel()
+        val fileSize = json.get("size").asInt
+        val downloadUri = json.get("download_uri").asString
+
+        return ScryfallApi.BulkData(
+            size = fileSize,
+            content =
+                httpClient
+                    .get {
+                        url(downloadUri)
+                        method = HttpMethod.Get
+                    }.bodyAsChannel(),
+        )
     }
 }

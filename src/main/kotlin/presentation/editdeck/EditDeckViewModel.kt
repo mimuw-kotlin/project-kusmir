@@ -55,7 +55,6 @@ class EditDeckViewModel(
                 viewModelScope.launch {
                     val card = cardsUseCases.getCardByName(event.cardName)
 
-                    assert(event.type == null)
                     val target =
                         event.type
                             ?: if (addCardMenuState.value.selectedDeckTypeId == 0) {

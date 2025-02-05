@@ -6,6 +6,8 @@ import kotlin.uuid.Uuid
 interface CardsDao {
     suspend fun getById(id: Uuid): CardDb?
 
+    suspend fun getByMtgoId(mtgoId: Long): CardDb?
+
     suspend fun getByName(name: String): CardDb?
 
     suspend fun deleteWithId(id: Uuid)
@@ -19,6 +21,7 @@ interface CardsDao {
 
     suspend fun insert(
         id: Uuid,
+        mtgoId: Long,
         name: String,
         colors: List<String>?,
         legalities: Map<String, Boolean>,

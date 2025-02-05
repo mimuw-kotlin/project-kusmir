@@ -1,4 +1,4 @@
-package presentation.editdeck.components
+package presentation.common.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -47,7 +47,7 @@ fun RowSwitch(
             val tabWidth = maxWidth / items.size
 
             val indicatorOffset by animateDpAsState(
-                targetValue = tabWidth * selectedIndex,
+                targetValue = if (items.size > 1) tabWidth * selectedIndex else 0.dp,
                 animationSpec =
                     tween(
                         durationMillis = 250,
@@ -56,14 +56,16 @@ fun RowSwitch(
                 label = "indicator offset",
             )
 
-            Box(
-                modifier =
-                    Modifier
-                        .offset(x = indicatorOffset)
-                        .shadow(4.dp, RoundedCornerShape(8.dp))
-                        .width(tabWidth)
-                        .fillMaxHeight(),
-            )
+            if (items.size > 1) {
+                Box(
+                    modifier =
+                        Modifier
+                            .offset(x = indicatorOffset)
+                            .shadow(4.dp, RoundedCornerShape(8.dp))
+                            .width(tabWidth)
+                            .fillMaxHeight(),
+                )
+            }
 
             val color = MaterialTheme.colors.primary
             Row(
@@ -72,8 +74,8 @@ fun RowSwitch(
                         .fillMaxWidth()
                         .drawBehind {
                             drawRoundRect(
-                                topLeft = Offset(x = indicatorOffset.toPx(), 0f),
-                                size = Size(size.width / 2, size.height),
+                                topLeft = Offset(x = indicatorOffset.toPx(), y = 0f),
+                                size = Size(tabWidth.toPx(), size.height),
                                 color = color,
                                 cornerRadius = CornerRadius(x = 8.dp.toPx(), y = 8.dp.toPx()),
                             )

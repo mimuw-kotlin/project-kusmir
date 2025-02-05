@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Home
@@ -19,6 +18,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,7 +27,6 @@ import presentation.Screen
 
 @Composable
 fun CustomTopBar(
-    onBackPressed: () -> Unit,
     onNavigate: (Screen) -> Unit,
     currentScreen: Screen,
 ) {
@@ -36,16 +36,6 @@ fun CustomTopBar(
                 .padding(bottom = 16.dp)
                 .background(MaterialTheme.colors.primarySurface),
     ) {
-        IconButton(onClick = onBackPressed) {
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                tint = MaterialTheme.colors.onPrimary,
-            )
-        }
-
-        Spacer(Modifier.weight(1f))
-
         NavigationButtons(onNavigate, currentScreen)
     }
 }
@@ -103,7 +93,8 @@ fun NavigationButtons(
                 modifier =
                     Modifier
                         .width(100.dp)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .pointerHoverIcon(PointerIcon.Hand),
                 shape = RoundedCornerShape(16.dp),
                 colors =
                     ButtonDefaults.buttonColors(
@@ -132,7 +123,6 @@ fun NavigationButtons(
 @Preview
 fun CustomTopBarPreview() {
     CustomTopBar(
-        onBackPressed = {},
         onNavigate = {},
         currentScreen = Screen.Home,
     )

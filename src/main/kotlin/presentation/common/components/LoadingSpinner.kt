@@ -36,8 +36,8 @@ fun LoadingSpinner(
             ),
     )
 
-    Box(modifier = modifier) {
-        Canvas(modifier = Modifier.aspectRatio(1f).fillMaxSize()) {
+    Box(modifier = modifier.aspectRatio(1f)) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
             drawArc(
                 color = color,
                 startAngle = rotation,

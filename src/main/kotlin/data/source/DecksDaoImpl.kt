@@ -19,7 +19,7 @@ class DecksDaoImpl(
         withContext(Dispatchers.IO) {
             queries.transactionWithResult {
                 queries.insertDeck(name, null)
-                queries.getLastInsertedDeckId().executeAsOne()
+                queries.getLastInsertedId().executeAsOne()
             }
         }
 

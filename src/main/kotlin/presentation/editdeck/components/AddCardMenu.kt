@@ -23,6 +23,7 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import presentation.common.components.RowSwitch
 import presentation.common.components.SearchBar
 
 const val ANIMATION_DURATION = 300

@@ -8,6 +8,7 @@ import app.softwork.uuid.toUuid
 import data.local.database.CardDb
 import data.local.database.Card_deck
 import data.local.database.Database
+import data.local.database.GameReportDb
 import data.source.CardsDaoImpl
 import data.sqldelight.CustomAdaptersImpl
 import domain.model.MtgColor
@@ -33,7 +34,6 @@ class CardsRepositoryFullDataTest {
         @JvmStatic
         fun setup() =
             runTest(timeout = 5.toDuration(DurationUnit.MINUTES)) {
-//            val driver = DatabaseDriverFactory().createDriver()
                 val driver = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
                 Database.Schema.create(driver)
                 val db =
@@ -49,6 +49,13 @@ class CardsRepositoryFullDataTest {
                             Card_deck.Adapter(
                                 cardIdAdapter = UuidByteArrayAdapter,
                             ),
+                        gameReportDbAdapter =
+                            GameReportDb.Adapter(
+                                opponentRevealedCardsIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+                                playerDrawnCardsIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+                                cardsSidedInIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+                                cardsSidedOutIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+                            ),
                     )
 
                 val dao = CardsDaoImpl(db)
@@ -59,7 +66,7 @@ class CardsRepositoryFullDataTest {
                         scryfallApi = scryfallApi,
                     )
 
-                cardsRepository.fetchAndUpdateCardsData()
+                cardsRepository.fetchAndUpdateCardsData().collect {}
             }
     }
 
@@ -83,6 +90,19 @@ class CardsRepositoryFullDataTest {
                 setOf(MtgColor.BLUE, MtgColor.RED, MtgColor.BLACK),
                 card.colorIdentity,
             )
+        }
+
+    @Test
+    fun testGetByMtgoId() =
+        runTest {
+            val mtgoId = 58813L
+            val actualName = "Island"
+
+            val card = cardsRepository.getCardByMtgoId(mtgoId)
+
+            assertNotNull(card)
+            assertEquals(actualName, card.name)
+            assertEquals(mtgoId, card.mtgoId)
         }
 
     @OptIn(ExperimentalUuidApi::class)

@@ -42,7 +42,6 @@ fun DecksScreen(
         },
         topBar = {
             CustomTopBar(
-                onBackPressed = {},
                 onNavigate = { screen -> navController.navigate(screen) },
                 currentScreen = Screen.Decks,
             )

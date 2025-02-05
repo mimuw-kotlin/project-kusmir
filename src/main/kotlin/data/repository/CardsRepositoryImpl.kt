@@ -11,17 +11,17 @@ import data.repository.util.toDomain
 import data.source.CardsDao
 import domain.model.Card
 import domain.repository.CardsRepository
-import io.ktor.util.cio.writeChannel
-import io.ktor.utils.io.copyAndClose
+import io.ktor.utils.io.jvm.javaio.toInputStream
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
-import java.io.InputStreamReader
 import kotlin.uuid.Uuid
+
+const val BULK_INSERT_SIZE = 5000
 
 class CardsRepositoryImpl(
     private val cardsDao: CardsDao,
@@ -32,56 +32,64 @@ class CardsRepositoryImpl(
         return card?.toDomain()
     }
 
+    override suspend fun getCardByMtgoId(mtgoId: Long): Card? {
+        val card = cardsDao.getByMtgoId(mtgoId)
+        if (card != null) {
+            return card.toDomain()
+        } else {
+            val cardDb = scryfallApi.fetchCardByMtgoId(mtgoId)
+            return cardDb
+                ?.also {
+                    cardsDao.insert(cardDb)
+                }?.toDomain()
+        }
+    }
+
     override suspend fun getCardByName(name: String): Card? {
         val card = cardsDao.getByName(name)
         return card?.toDomain()
     }
 
-    override suspend fun fetchAndUpdateCardsData() {
-        val tempFile =
-            withContext(Dispatchers.IO) {
-                File.createTempFile("cards", ".json")
-            }
+    override fun fetchAndUpdateCardsData(): Flow<Float> =
+        flow {
+            val bulkData = scryfallApi.fetchBulkData("oracle_cards")
+            val gson = Gson()
 
-        scryfallApi.getCardsChannel("oracle_cards").copyAndClose(tempFile.writeChannel())
+            var bytesRead = 0L
 
-        val gson = Gson()
-        val inputStream =
-            withContext(Dispatchers.IO) {
-                FileInputStream(tempFile)
-            }
+            bulkData.content.toInputStream().bufferedReader().use { reader ->
+                JsonReader(reader).use { jsonReader ->
+                    if (jsonReader.peek() != JsonToken.BEGIN_ARRAY) {
+                        throw IOException("Expected an array at the root of JSON data")
+                    }
 
-        inputStream.use { input ->
-            JsonReader(InputStreamReader(input)).use { jsonReader ->
-                if (jsonReader.peek() != JsonToken.BEGIN_ARRAY) {
-                    throw IOException("Expected an array at the root of JSON data")
-                }
+                    jsonReader.beginArray()
 
-                jsonReader.beginArray()
+                    val allCards: MutableList<CardDb> = mutableListOf()
+                    while (jsonReader.hasNext() && jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
+                        val jsonObject = gson.fromJson<JsonElement>(jsonReader, JsonElement::class.java).asJsonObject
+                        jsonObject.toDatabase()?.let { allCards.add(it) }
 
-                val allCards: MutableList<CardDb> = mutableListOf()
-                while (jsonReader.hasNext() && jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
-                    val jsonObject = gson.fromJson<JsonElement>(jsonReader, JsonElement::class.java).asJsonObject
-                    allCards.add(jsonObject.toDatabase())
+                        bytesRead += jsonObject.toString().length.toLong()
+                        emit((bytesRead.toFloat() / bulkData.size))
 
-                    if (allCards.size >= 5000) {
-                        println(allCards)
+                        if (allCards.size >= BULK_INSERT_SIZE) {
+                            cardsDao.insertMultiple(allCards)
+                            allCards.clear()
+                        }
+                    }
+
+                    if (allCards.isNotEmpty()) {
                         cardsDao.insertMultiple(allCards)
-                        allCards.clear()
                     }
                 }
-
-                if (allCards.isNotEmpty()) {
-                    cardsDao.insertMultiple(allCards)
-                }
             }
-        }
 
-        val currentTime = Clock.System.now()
-        cardsDao.insertMetadata("lastFetchInstant", currentTime.toString())
+            val currentTime = Clock.System.now()
+            cardsDao.insertMetadata("lastFetchInstant", currentTime.toString())
 
-        tempFile.delete()
-    }
+            emit(1f) // Mark completion.
+        }.flowOn(Dispatchers.IO)
 
     override suspend fun getCardsSearchResults(
         query: String,

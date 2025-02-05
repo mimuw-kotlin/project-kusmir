@@ -7,6 +7,7 @@ import app.softwork.uuid.sqldelight.UuidByteArrayAdapter
 import data.local.database.CardDb
 import data.local.database.Card_deck
 import data.local.database.Database
+import data.local.database.GameReportDb
 import data.sqldelight.CustomAdaptersImpl
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -29,6 +30,13 @@ internal fun mockCardDatabase(): Database {
             Card_deck.Adapter(
                 cardIdAdapter = UuidByteArrayAdapter,
             ),
+        gameReportDbAdapter =
+            GameReportDb.Adapter(
+                opponentRevealedCardsIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+                playerDrawnCardsIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+                cardsSidedInIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+                cardsSidedOutIdsAdapter = CustomAdaptersImpl().listUuidAdapter(),
+            ),
     )
 }
 
@@ -37,6 +45,7 @@ internal fun sampleCardDbList(): List<CardDb> =
     listOf(
         CardDb(
             id = Uuid.random(),
+            mtgoId = 1,
             name = "Test Card One",
             colors = listOf("W"),
             legalities =
@@ -50,6 +59,7 @@ internal fun sampleCardDbList(): List<CardDb> =
         ),
         CardDb(
             id = Uuid.random(),
+            mtgoId = 2,
             name = "Test Card Two",
             colors = listOf("R", "G", "B"),
             legalities =

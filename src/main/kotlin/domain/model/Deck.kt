@@ -93,10 +93,18 @@ data class DeckList(
 
 data class Deck(
     val id: Long = -1,
-    val name: String = "",
+    val name: String = "New Deck",
     val imageSource: String? = null,
     val mainDeck: DeckList,
     val sideboard: DeckList,
 ) {
     enum class ListType { MainDeck, Sideboard }
+
+    companion object {
+        fun emptyDeck() =
+            Deck(
+                mainDeck = DeckList(),
+                sideboard = DeckList(),
+            )
+    }
 }

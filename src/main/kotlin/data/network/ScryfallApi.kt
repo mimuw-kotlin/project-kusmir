@@ -1,14 +1,20 @@
 package data.network
 
+import data.local.database.CardDb
 import io.ktor.client.statement.*
 import io.ktor.utils.io.*
 
 interface ScryfallApi {
-    suspend fun fetchCardById(id: String): HttpResponse
+    suspend fun fetchCardById(id: String): CardDb?
 
-    suspend fun fetchCardByName(name: String): HttpResponse
+    suspend fun fetchCardByMtgoId(mtgoId: Long): CardDb?
 
-    suspend fun fetchBulkData(type: String): HttpResponse
+    suspend fun fetchCardByName(name: String): CardDb?
 
-    suspend fun getCardsChannel(type: String): ByteReadChannel
+    data class BulkData(
+        val size: Int,
+        val content: ByteReadChannel,
+    )
+
+    suspend fun fetchBulkData(type: String): BulkData
 }

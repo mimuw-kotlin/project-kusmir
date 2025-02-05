@@ -56,7 +56,7 @@ fun DefaultTextField(
 @Preview
 @Composable
 fun PreviewSearchTextField() {
-    var query by remember { mutableStateOf("guwno") }
+    var query by remember { mutableStateOf("Random query") }
     DefaultTextField(
         value = query,
         onValueChange = { query = it },

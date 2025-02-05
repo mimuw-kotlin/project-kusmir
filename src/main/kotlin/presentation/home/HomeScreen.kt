@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -16,6 +17,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.datetime.LocalDateTime
@@ -38,8 +41,7 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             CustomTopBar(
-                onBackPressed = { navController.navigateUp() },
-                onNavigate = { screen -> navController.navigate(screen) },
+                onNavigate = { screen -> if (!state.isLoadingCards) navController.navigate(screen) },
                 currentScreen = Screen.Home,
             )
         },
@@ -47,7 +49,7 @@ fun HomeScreen(
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Button(
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier.padding(8.dp).pointerHoverIcon(PointerIcon.Hand),
                     onClick = { viewModel.onEvent(HomeEvent.FetchCardsData) },
                     enabled = !state.isLoadingCards,
                 ) {
@@ -74,11 +76,13 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.Center,
                 ) {
                     Row(modifier = Modifier.padding(vertical = 8.dp).weight(0.8f)) {
-                        LoadingSpinner()
+                        LoadingSpinner(modifier = Modifier.width(200.dp))
                     }
                     Row(modifier = Modifier.padding(vertical = 8.dp).weight(0.2f)) {
                         Text("Fetching cards data...")
                     }
+
+                    LinearProgressIndicator(progress = state.downloadProgress)
                 }
             }
         }

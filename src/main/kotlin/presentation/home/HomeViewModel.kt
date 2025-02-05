@@ -29,8 +29,15 @@ class HomeViewModel(
         when (event) {
             is HomeEvent.FetchCardsData -> {
                 viewModelScope.launch {
+                    val progressFlow = cardsUseCases.fetchCardsData()
                     _state.value = _state.value.copy(isLoadingCards = true)
-                    cardsUseCases.fetchCardsData()
+
+                    progressFlow.collect { progress ->
+                        _state.value =
+                            state.value.copy(
+                                downloadProgress = progress,
+                            )
+                    }
 
                     val currentTime =
                         Clock.System

@@ -16,6 +16,11 @@ class CardsDaoImpl(
             queries.getById(id).executeAsOneOrNull()
         }
 
+    override suspend fun getByMtgoId(mtgoId: Long): CardDb? =
+        withContext(Dispatchers.IO) {
+            queries.getByMtgoId(mtgoId).executeAsOneOrNull()
+        }
+
     override suspend fun getByName(name: String): CardDb? =
         withContext(Dispatchers.IO) {
             queries.getByName(name).executeAsOneOrNull()
@@ -43,6 +48,7 @@ class CardsDaoImpl(
 
     override suspend fun insert(
         id: Uuid,
+        mtgoId: Long,
         name: String,
         colors: List<String>?,
         legalities: Map<String, Boolean>,
@@ -53,6 +59,7 @@ class CardsDaoImpl(
         withContext(Dispatchers.IO) {
             queries.insertCard(
                 id,
+                mtgoId,
                 name,
                 colors,
                 legalities,
@@ -68,6 +75,7 @@ class CardsDaoImpl(
             with(card) {
                 queries.insertCard(
                     id,
+                    mtgoId,
                     name,
                     colors,
                     legalities,
@@ -85,6 +93,7 @@ class CardsDaoImpl(
                 cards.forEach { card ->
                     queries.insertCard(
                         card.id,
+                        card.mtgoId,
                         card.name,
                         card.colors,
                         card.legalities,
