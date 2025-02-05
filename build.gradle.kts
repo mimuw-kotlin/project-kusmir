@@ -1,3 +1,4 @@
+import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
@@ -44,6 +45,9 @@ dependencies {
     implementation(libs.coil.network.okhttp)
 
     testImplementation(kotlin("test"))
+    testImplementation(libs.mockk)
+    @OptIn(ExperimentalComposeLibrary::class)
+    testImplementation(compose.uiTest)
     implementation(libs.kotlinx.coroutines.test)
 }
 
